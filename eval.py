@@ -9,6 +9,7 @@ from IPython.display import Video
 import glob
 import matplotlib.pyplot as plt
 
+### VALIDATION WITH TEST DATASET ###
 # Dataset
 test_dataset = 'data/test.yml'
 
@@ -23,7 +24,13 @@ for weight in weights:
     # Test the model with val test folder
     model.val(data=test_dataset, save=True)
 
-### MEAN AND STANDARD DEVIATION CALCULATIONS
+### PREDICT ON TEST IMAGES ###
+# Get all test images
+test_images = glob.glob('data/test/images/*.png')
+
+model.predict(source=test_images, imgsz=640, save_txt=True, save=True)
+
+### MEAN AND STANDARD DEVIATION CALCULATIONS ###
 file_path_pattern = 'runs/detect/**/results.csv'
 
 # Get a list of all file paths matching the pattern
