@@ -12,6 +12,10 @@
 # Built Visual Studio Code Extensions
 *.vsix
 
+# Ignore data folder
+data/*
+data/
+
 # Ignore MyEnv folder
 MyEnv/*
 MyEnv/
