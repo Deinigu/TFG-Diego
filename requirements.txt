@@ -1,0 +1,10 @@
+ultralytics
+opencv-python
+pandas
+glob2
+matplotlib
+pillow
+IPython
+pyyaml
+numpy
+scikit-learn
