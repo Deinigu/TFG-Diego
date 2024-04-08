@@ -9,21 +9,19 @@ from IPython.display import Video
 import glob
 import matplotlib.pyplot as plt
 
-# Load a model
-model = YOLO(model='runs/detect/train/weights/best.pt', task='detect')
+# Dataset
+test_dataset = 'data/test.yml'
 
-# Perform predictions for each photo in data/test/images
-image_folder = 'data/test/images'
-image_paths = glob.glob(os.path.join(image_folder, '*.png'))
+# Get all weights in runs/detect/ folder
+weights = glob.glob('runs/detect/**/best.pt', recursive=True)
 
-predictions = []
-for image_path in image_paths:
-    prediction = model(source=image_path, imgsz=640, save=True, save_txt=True)
-    predictions.append(prediction)
-
-# Display the predictions
-for prediction in predictions:
-    print(prediction)
+# Iterate through all weights
+for weight in weights:
+    # Load the model
+    model = YOLO(model=weight, task='detect')
+    
+    # Test the model with val test folder
+    model.val(data=test_dataset, save=True)
 
 ### MEAN AND STANDARD DEVIATION CALCULATIONS
 file_path_pattern = 'runs/detect/**/results.csv'
@@ -47,6 +45,10 @@ results_df.columns = results_df.columns.str.replace(' ', '')
 # Group by the first column and calculate the mean and standard deviation
 mean_df = results_df.groupby(results_df.columns[0]).mean()
 std_df = results_df.groupby(results_df.columns[0]).std()
+
+# Create directory eval if it does not exist
+if not os.path.exists('eval'):
+    os.makedirs('eval')
 
 # Save mean_df to a CSV file
 mean_df.to_csv('eval/mean_results.csv')
