@@ -13,8 +13,16 @@
 *.vsix
 
 # Ignore data folder
-data/*
+!data/*
 data/
+
+# Ignore eval folder
+eval/*
+eval/
+
+# Ignore runs folder
+runs/*
+runs/
 
 # Ignore MyEnv folder
 MyEnv/*
