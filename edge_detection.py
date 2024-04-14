@@ -48,7 +48,7 @@ def line_intersections(h_lines, v_lines):
             ])
             b = np.array([[rho1], [rho2]])
             point = np.linalg.solve(A, b)
-            point = int(np.round(point[0])), int(np.round(point[1]))
+            point = int(np.round(point[0][0])), int(np.round(point[1][0]))
             points.append(point)
     return np.array(points)
 
