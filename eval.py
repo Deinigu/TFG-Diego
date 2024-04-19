@@ -1,13 +1,7 @@
 import pandas as pd
 import glob
-import ultralytics
 from ultralytics import YOLO
 import os
-from PIL import Image
-import cv2
-from IPython.display import Video
-import glob
-import matplotlib.pyplot as plt
 
 ### VALIDATION WITH TEST DATASET ###
 # Dataset
