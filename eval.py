@@ -2,13 +2,29 @@ import pandas as pd
 import glob
 from ultralytics import YOLO
 import os
+from datetime import datetime
+
+# Get the current date and time
+now = datetime.now()
+
+# Directories to save the evaluation results
+root_dir = "eval/"
+eval_dir = root_dir + now.strftime("%Y-%m-%d_%H-%M-%S") + "/"
+val_dir = eval_dir + "validation/"
+pred_dir = eval_dir + "predictions/"
+
+# Create directory eval if it does not exist
+os.makedirs(root_dir, exist_ok=True)
+os.makedirs(eval_dir, exist_ok=True)
+os.makedirs(val_dir, exist_ok=True)
+os.makedirs(pred_dir, exist_ok=True)
 
 ### VALIDATION WITH TEST DATASET ###
 # Dataset
 test_dataset = "data/test.yml"
 
 # Get all weights in runs/detect/ folder
-weights = glob.glob("runs/detect/**/best.pt", recursive=True)
+weights = glob.glob("runs/**/best.pt", recursive=True)
 
 # Iterate through all weights
 for weight in weights:
@@ -16,7 +32,7 @@ for weight in weights:
     model = YOLO(model=weight, task="detect")
 
     # Test the model with val test folder
-    model.val(data=test_dataset, save=True)
+    model.val(data=test_dataset, save=True, project=val_dir)
 
 ### PREDICT ON TEST IMAGES ###
 # Get all test images
@@ -27,11 +43,11 @@ for weight in weights:
     model = YOLO(model=weight, task="detect")
 
     # Predict on test images
-    model.predict(source=test_images, imgsz=640, save_txt=True, save=True)
+    model.predict(source=test_images, imgsz=640, save_txt=True, save=True, project=pred_dir)
 
 
 ### MEAN AND STANDARD DEVIATION CALCULATIONS ###
-file_path_pattern = "runs/detect/**/results.csv"
+file_path_pattern = "runs/**/results.csv"
 
 # Get a list of all file paths matching the pattern
 file_paths = glob.glob(file_path_pattern, recursive=True)
@@ -53,12 +69,10 @@ results_df.columns = results_df.columns.str.replace(" ", "")
 mean_df = results_df.groupby(results_df.columns[0]).mean()
 std_df = results_df.groupby(results_df.columns[0]).std()
 
-# Create directory eval if it does not exist
-if not os.path.exists("eval"):
-    os.makedirs("eval")
-
 # Save mean_df to a CSV file
-mean_df.to_csv("eval/mean_results.csv")
+if mean_df.to_csv(eval_dir + "mean_results.csv"):
+    print("Saved mean_results.csv successfully to" + eval_dir + "mean_results.csv")
 
 # Save std_df to a CSV file
-std_df.to_csv("eval/std_results.csv")
+if std_df.to_csv(eval_dir + "std_results.csv"):
+    print("Saved std_results.csv successfully to" + eval_dir + "std_results.csv")
