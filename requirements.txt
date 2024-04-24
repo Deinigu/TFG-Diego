@@ -8,3 +8,4 @@ IPython
 pyyaml
 numpy
 scikit-learn
+sympy
