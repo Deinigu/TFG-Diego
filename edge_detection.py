@@ -1,4 +1,5 @@
 from collections import defaultdict
+import glob
 import math
 import operator
 import os
@@ -6,8 +7,9 @@ from statistics import mean
 import cv2
 import numpy as np
 from scipy import cluster, spatial
+from sympy import Polygon
 
-
+# Show an image and wait for a key press
 def show_image(img, name="Debug"):
     cv2.imshow(name, img)
     cv2.waitKey(0)
@@ -67,6 +69,34 @@ def cluster_points(points, max_dist=20):
     for point in clusters:
         result.append([point[0], point[1]])
     return result
+
+# Returns a array of 64 cells with the coordinates of the corners of each cell
+def calculate_cells(points):
+    # Order the points by y coordinate (top to bottom)
+    coordinates = []
+    for point in points:
+        coordinates.append([point[0], point[1]])
+    coordinates = sorted(coordinates, key=lambda x: x[1])
+
+    # Knowing that the points are ordered from top to bottom, we can divide them into cells
+    cells = []
+    for i in range(0, len(coordinates)-9,1):
+        if ((i+1) % 9 > 0 or i == 0):
+            cell = np.array([coordinates[i],coordinates[i+1],coordinates[i+9],coordinates[i+10]])
+            for point in cell:
+                cv2.circle(img, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1)
+                # Show the image with the detected edges
+            show_image(img, "Casillas")
+            cells.append(cell)
+    return cells
+
+# Calculate the Intersection over Union (IoU) of two bounding boxes
+def calculate_iou(box_1, box_2):
+    poly_1 = Polygon(box_1)
+    poly_2 = Polygon(box_2)
+    iou = poly_1.intersection(poly_2).area / poly_1.union(poly_2).area
+    return iou
+
 
 # Debug
 debug = False
@@ -129,15 +159,18 @@ intersection_points = line_intersections(h_lines, v_lines)
 points = cluster_points(intersection_points)
 
 # Draw the points on the image
-for point in points:
-    cv2.circle(img, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1)
+if debug:
+    for point in points:
+        cv2.circle(img, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1)
+    # Show the image with the detected edges
+    show_image(img, "Result")
 
-# Show the image with the detected edges
-show_image(img, "Result")
+    # Create results directory if it does not exist
+    if not os.path.exists("edge-detection/results"):
+        os.makedirs("edge-detection/results")
 
-# Create results directory if it does not exist
-if not os.path.exists("edge-detection/results"):
-    os.makedirs("edge-detection/results")
+    # Save the image with the detected edges
+    cv2.imwrite("edge-detection/results/" + name + "_edges.png", img)
 
-# Save the image with the detected edges
-cv2.imwrite("edge-detection/results/" + name + "_edges.png", img)
+cells = calculate_cells(points)
+print(cells)
