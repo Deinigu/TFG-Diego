@@ -24,3 +24,7 @@ runs/
 MyEnv/*
 MyEnv/
 data/test/labels.cache
+
+# Ignore python cache
+__pycache__/
+*.pyc

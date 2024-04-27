@@ -1,3 +1,4 @@
+import chess_functions as cf
 from collections import defaultdict
 import glob
 import math
@@ -7,68 +8,8 @@ from statistics import mean
 import cv2
 import numpy as np
 from scipy import cluster, spatial
-from sympy import Polygon
-
-# Show an image and wait for a key press
-def show_image(img, name="Debug"):
-    cv2.imshow(name, img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
-# Canny edge detection
-def canny_edge(img, sigma=0.33):
-    v = np.median(img)
-    lower = int(max(0, (1.0 - sigma) * v))
-    upper = int(min(255, (1.0 + sigma) * v))
-    edges = cv2.Canny(img, lower, upper)
-    return edges
-
-# Hough Transform
-def hough_line(edges, min_line_length=100, max_line_gap=15):
-    lines = cv2.HoughLines(edges, 1, np.pi / 180, 125, min_line_length, max_line_gap)
-    lines = np.reshape(lines, (-1, 2))
-    return lines
-
-# Separate line into horizontal and vertical
-def h_v_lines(lines):
-    h_lines, v_lines = [], []
-    for rho, theta in lines:
-        if theta < np.pi / 4 or theta > np.pi - np.pi / 4:
-            v_lines.append([rho, theta])
-        else:
-            h_lines.append([rho, theta])
-    return h_lines, v_lines
-
-# Find the intersections of the lines
-def line_intersections(h_lines, v_lines):
-    points = []
-    for rho1, theta1 in h_lines:
-        for rho2, theta2 in v_lines:
-            A = np.array([
-                [np.cos(theta1), np.sin(theta1)],
-                [np.cos(theta2), np.sin(theta2)]
-            ])
-            b = np.array([[rho1], [rho2]])
-            point = np.linalg.solve(A, b)
-            point = int(np.round(point[0][0])), int(np.round(point[1][0]))
-            points.append(point)
-    return np.array(points)
-
-# Hierarchical cluster (by euclidean distance) intersection points
-def cluster_points(points, max_dist=20):
-    Y = spatial.distance.pdist(points)
-    Z = cluster.hierarchy.single(Y)
-    T = cluster.hierarchy.fcluster(Z, max_dist, 'distance')
-    clusters = defaultdict(list)
-    for i in range(len(T)):
-        clusters[T[i]].append(points[i])
-    clusters = clusters.values()
-    clusters = map(lambda arr: (np.mean(np.array(arr)[:, 0]), np.mean(np.array(arr)[:, 1])), clusters)
-
-    result = []
-    for point in clusters:
-        result.append([point[0], point[1]])
-    return result
+from sympy import Point, Polygon
+import chess_pieces_FEN_definition as FEN
 
 # Returns a array of 64 cells with the coordinates of the corners of each cell
 def calculate_cells(points):
@@ -83,20 +24,35 @@ def calculate_cells(points):
     for i in range(0, len(coordinates)-9,1):
         if ((i+1) % 9 > 0 or i == 0):
             cell = np.array([coordinates[i],coordinates[i+1],coordinates[i+9],coordinates[i+10]])
-            for point in cell:
-                cv2.circle(img, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1)
-                # Show the image with the detected edges
-            show_image(img, "Casillas")
+            if(debug):
+                for point in cell:
+                    cv2.circle(img, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1)
+                    # Show the image with the detected edges
+                cf.show_image(img, "Casillas")
             cells.append(cell)
     return cells
 
-# Calculate the Intersection over Union (IoU) of two bounding boxes
-def calculate_iou(box_1, box_2):
-    poly_1 = Polygon(box_1)
-    poly_2 = Polygon(box_2)
-    iou = poly_1.intersection(poly_2).area / poly_1.union(poly_2).area
-    return iou
+def is_piece_in_cell(piece_coords, cell_coords):
+    l, r, t, b = piece_coords  # Coordenadas de la pieza
+    cell_tl, cell_tr, cell_bl, cell_br = cell_coords  # Coordenadas de la celda
 
+    cell_l = min(cell_tl[0], cell_tr[0], cell_bl[0], cell_br[0])
+    cell_r = max(cell_tl[0], cell_tr[0], cell_bl[0], cell_br[0])
+    cell_t = min(cell_tl[1], cell_tr[1], cell_bl[1], cell_br[1])
+    cell_b = max(cell_tl[1], cell_tr[1], cell_bl[1], cell_br[1])
+
+    if (l < cell_r and r > cell_l) and (t < cell_b and b > cell_t):
+        return True
+    else:
+        return False
+
+# Return the cell which is downer
+def get_cell_downer(cells):
+    downer = cells[0]
+    for cell in cells:
+        if cell[0][1] > downer[0][1]:
+            downer = cell
+    return downer
 
 # Debug
 debug = False
@@ -109,23 +65,23 @@ img = cv2.imread("edge-detection/assets/" + name + ".png")
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 if debug:
-    show_image(gray, "Gray")
+    cf.show_image(gray, "Gray")
 
 # Apply Gaussian blur
 blur = cv2.GaussianBlur(gray, (5, 5), 0)
 if debug:
-    show_image(blur, "Blur")
+    cf.show_image(blur, "Blur")
 
 # Apply Canny edge detection
-edges = canny_edge(blur)
+edges = cf.canny_edge(blur)
 if debug:
-    show_image(edges, "Edges")
+    cf.show_image(edges, "Edges")
 
 # Hough Transform
-lines = hough_line(edges)
+lines = cf.hough_line(edges)
 
 # Separate the lines into vertical and horizontal lines        
-h_lines, v_lines = h_v_lines(lines)
+h_lines, v_lines = cf.h_v_lines(lines)
 
 if debug:
     img_houg = img.copy()
@@ -152,18 +108,18 @@ if debug:
         x2 = int(x0 - 1000 * (-b))
         y2 = int(y0 - 1000 * (a))
         cv2.line(img_houg, (x1, y1), (x2, y2), (0, 0, 255), 2)
-    show_image(img_houg, "Hough Transform")
+    cf.show_image(img_houg, "Hough Transform")
        
 # Find and cluster the intersecting        
-intersection_points = line_intersections(h_lines, v_lines)
-points = cluster_points(intersection_points)
+intersection_points = cf.line_intersections(h_lines, v_lines)
+points = cf.cluster_points(intersection_points)
 
 # Draw the points on the image
 if debug:
     for point in points:
         cv2.circle(img, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1)
     # Show the image with the detected edges
-    show_image(img, "Result")
+    cf.show_image(img, "Result")
 
     # Create results directory if it does not exist
     if not os.path.exists("edge-detection/results"):
@@ -173,4 +129,49 @@ if debug:
     cv2.imwrite("edge-detection/results/" + name + "_edges.png", img)
 
 cells = calculate_cells(points)
-print(cells)
+# print(cells)
+
+# Read lines of the labels file
+lines = []
+with open("edge-detection/assets/labels/prueba_sin_fondo.txt") as f:
+    lines = f.readlines()
+
+# Get the name of the chess pieces
+dh, dw, _ = img.shape
+for line in lines:
+    # Split the numbers in the line
+    chesss_piece_number, x, y, w, h = map(float, line.split(' '))
+    chesss_piece_number = int(chesss_piece_number)
+    
+    # Get the name of the chess piece in FEN notation
+    chess_piece = cf.get_piece_name(chesss_piece_number)
+    print(chess_piece)
+    
+    l = float((x - w / 2) * dw)
+    r = float((x + w / 2) * dw)
+    t = float((y - h / 2) * dh)
+    b = float((y + h / 2) * dh)
+    
+    if l < 0:
+        l = 0
+    if r > dw - 1:
+        r = dw - 1
+    if t < 0:
+        t = 0
+    if b > dh - 1:
+        b = dh - 1
+    piece_coords = (l, r, t, b)
+    
+    possible_cells = []
+    for cell in cells:
+        if is_piece_in_cell(piece_coords, cell):
+            possible_cells.append(cell)
+    
+    result = get_cell_downer(possible_cells)
+    cv2.circle(img, (int(result[0][0]), int(result[0][1])), 5, (0, 0, 255), -1)
+    cv2.circle(img, (int(result[1][0]), int(result[1][1])), 5, (0, 0, 255), -1)
+    cv2.circle(img, (int(result[2][0]), int(result[2][1])), 5, (0, 0, 255), -1)
+    cv2.circle(img, (int(result[3][0]), int(result[3][1])), 5, (0, 0, 255), -1)
+    cv2.rectangle(img, (int(l), int(t)), (int(r), int(b)), (0, 0, 255), 2)
+    cf.show_image(img, "Result")    
+    
