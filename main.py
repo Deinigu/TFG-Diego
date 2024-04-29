@@ -23,7 +23,7 @@ class ChessPiece:
 debug = False
 
 # Load the image
-name = "prueba_sin_fondo"
+name = "test"
 img = cv2.imread("workspace/assets/" + name + ".png")
 
 # Create a folder to save the results
@@ -102,7 +102,7 @@ cells = cf.calculate_cells(points,debug,img.copy())
 
 # Read lines of the labels file
 lines = []
-with open("workspace/assets/labels/prueba_sin_fondo.txt") as f:
+with open("workspace/assets/labels/" + name + ".txt") as f:
     lines = f.readlines()
 
 # Get the name of the chess pieces
