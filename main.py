@@ -22,7 +22,7 @@ debug = False
 
 # Load the image
 name = "prueba_sin_fondo"
-img = cv2.imread("edge-detection/assets/" + name + ".png")
+img = cv2.imread("workspace/assets/" + name + ".png")
 
 # Transform the image to grayscale
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -85,21 +85,21 @@ if debug:
     cf.show_image(img, "Result")
 
     # Create results directory if it does not exist
-    if not os.path.exists("edge-detection/results"):
-        os.makedirs("edge-detection/results")
+    if not os.path.exists("workspace/results"):
+        os.makedirs("workspace/results")
 
     # Save the image with the detected edges
-    cv2.imwrite("edge-detection/results/" + name + "_edges.png", img)
+    cv2.imwrite("workspace/results/" + name + "_edges.png", img)
     
     # Clean the image
-    img = cv2.imread("edge-detection/assets/" + name + ".png")
+    img = cv2.imread("workspace/assets/" + name + ".png")
 
 cells = cf.calculate_cells(points,debug,img.copy())
 # print(cells)
 
 # Read lines of the labels file
 lines = []
-with open("edge-detection/assets/labels/prueba_sin_fondo.txt") as f:
+with open("workspace/assets/labels/prueba_sin_fondo.txt") as f:
     lines = f.readlines()
 
 # Get the name of the chess pieces
@@ -172,8 +172,12 @@ for i in range(8):
             if debug:
                 cf.show_image(img,"Chess pieces")
 
-cv2.imwrite("edge-detection/results/" + name + "_result.png", img)
+cv2.imwrite("workspace/results/" + name + "_result.png", img)
 
 # Generate the FEN notation
 fen = cf.generate_fen_notation(chessboard)
 print("https://lichess.org/editor/" + fen)
+
+# Save the FEN notation in a file
+with open("workspace/results/" + name + "_fen.txt", "w") as f:
+    f.write(fen)
