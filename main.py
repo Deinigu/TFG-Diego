@@ -10,6 +10,8 @@ import numpy as np
 from scipy import cluster, spatial
 from sympy import Point, Polygon
 import chess_pieces_FEN_definition as FEN
+from datetime import datetime
+
 
 class ChessPiece:
     def __init__(self, cell_coords, piece_coords, piece_type):
@@ -23,6 +25,11 @@ debug = False
 # Load the image
 name = "prueba_sin_fondo"
 img = cv2.imread("workspace/assets/" + name + ".png")
+
+# Create a folder to save the results
+save_path_folder = "workspace/results/" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "_" + name + "/"
+if not os.path.exists(save_path_folder):
+    os.makedirs(save_path_folder)
 
 # Transform the image to grayscale
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -78,21 +85,17 @@ intersection_points = cf.line_intersections(h_lines, v_lines)
 points = cf.cluster_points(intersection_points)
 
 # Draw the points on the image
-if debug:
-    for point in points:
-        cv2.circle(img, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1)
+for point in points:
+    cv2.circle(img, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1)
     # Show the image with the detected edges
+if debug:
     cf.show_image(img, "Result")
 
-    # Create results directory if it does not exist
-    if not os.path.exists("workspace/results"):
-        os.makedirs("workspace/results")
-
-    # Save the image with the detected edges
-    cv2.imwrite("workspace/results/" + name + "_edges.png", img)
+# Save the image with the detected edges
+cv2.imwrite(save_path_folder + name + "_edges.png", img)
     
-    # Clean the image
-    img = cv2.imread("workspace/assets/" + name + ".png")
+# Clean the image
+img = cv2.imread("workspace/assets/" + name + ".png")
 
 cells = cf.calculate_cells(points,debug,img.copy())
 # print(cells)
@@ -172,12 +175,12 @@ for i in range(8):
             if debug:
                 cf.show_image(img,"Chess pieces")
 
-cv2.imwrite("workspace/results/" + name + "_result.png", img)
+cv2.imwrite(save_path_folder + name + "_result.png", img)
 
 # Generate the FEN notation
 fen = cf.generate_fen_notation(chessboard)
 print("https://lichess.org/editor/" + fen)
 
 # Save the FEN notation in a file
-with open("workspace/results/" + name + "_fen.txt", "w") as f:
+with open(save_path_folder + name + "_fen.txt", "w") as f:
     f.write(fen)
