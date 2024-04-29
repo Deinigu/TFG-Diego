@@ -17,6 +17,25 @@ class ChessPiece:
         self.piece_coords = piece_coords
         self.piece_type = piece_type
 
+# Fen notation generator
+def generate_fen_notation(chessboard):
+    fen = ""
+    for i in range(8):
+        empty = 0
+        for j in range(8):
+            piece = chessboard[i][j]
+            if piece is None:
+                empty += 1
+            else:
+                if empty > 0:
+                    fen += str(empty)
+                    empty = 0
+                fen += piece.piece_type
+        if empty > 0:
+            fen += str(empty)
+        if i < 7:
+            fen += "/"
+    return fen
     
 # Returns a array of 64 cells with the coordinates of the corners of each cell
 def calculate_cells(points):
@@ -158,7 +177,7 @@ for line in lines:
     
     # Get the name of the chess piece in FEN notation
     chess_piece = cf.get_piece_name(chesss_piece_number)
-    print(chess_piece)
+    # print(chess_piece)
     
     l = float((x - w / 2) * dw)
     r = float((x + w / 2) * dw)
@@ -196,25 +215,29 @@ for cell in cells:
         j += 1
     for piece in chess_pieces:
         if np.array_equal(piece.cell_coords, cell):
-            print(piece.piece_type, i, j)  
+            # print(piece.piece_type, i, j)  
             chessboard[i][j] = piece
     i += 1
 
 # Invert the rows (for FEN notation)
 chessboard = chessboard[::-1]
 
-if debug:
     # Draw the pieces on the image
-    for i in range(8):
-        for j in range(8):
-            piece = chessboard[i][j]
-            if piece is not None:
-                l, t, r, b = piece.piece_coords
-                cv2.rectangle(img, (int(l), int(t)), (int(r), int(b)), (0, 255, 0), 2)
-                cv2.circle(img, (int(piece.cell_coords[0][0]), int(piece.cell_coords[0][1])), 5, (0, 0, 255), -1)
-                cv2.circle(img, (int(piece.cell_coords[1][0]), int(piece.cell_coords[1][1])), 5, (0, 0, 255), -1)
-                cv2.circle(img, (int(piece.cell_coords[2][0]), int(piece.cell_coords[2][1])), 5, (0, 0, 255), -1)
-                cv2.circle(img, (int(piece.cell_coords[3][0]), int(piece.cell_coords[3][1])), 5, (0, 0, 255), -1)
+for i in range(8):
+    for j in range(8):
+        piece = chessboard[i][j]
+        if piece is not None:
+            l, t, r, b = piece.piece_coords
+            cv2.rectangle(img, (int(l), int(t)), (int(r), int(b)), (0, 255, 0), 2)
+            cv2.circle(img, (int(piece.cell_coords[0][0]), int(piece.cell_coords[0][1])), 5, (0, 0, 255), -1)
+            cv2.circle(img, (int(piece.cell_coords[1][0]), int(piece.cell_coords[1][1])), 5, (0, 0, 255), -1)
+            cv2.circle(img, (int(piece.cell_coords[2][0]), int(piece.cell_coords[2][1])), 5, (0, 0, 255), -1)
+            cv2.circle(img, (int(piece.cell_coords[3][0]), int(piece.cell_coords[3][1])), 5, (0, 0, 255), -1)
+        if debug:
             cf.show_image(img,"Chess pieces")
 
 cv2.imwrite("edge-detection/results/" + name + "_result.png", img)
+
+# Generate the FEN notation
+fen = generate_fen_notation(chessboard)
+print("https://lichess.org/editor/" + fen)
