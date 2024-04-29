@@ -17,6 +17,7 @@ class ChessPiece:
         self.piece_coords = piece_coords
         self.piece_type = piece_type
 
+    
 # Returns a array of 64 cells with the coordinates of the corners of each cell
 def calculate_cells(points):
     # Order the points by y coordinate (top to bottom)
@@ -31,10 +32,11 @@ def calculate_cells(points):
         if ((i+1) % 9 > 0 or i == 0):
             cell = np.array([coordinates[i],coordinates[i+1],coordinates[i+9],coordinates[i+10]])
             if(debug):
+                img_cells = img.copy()
                 for point in cell:
-                    cv2.circle(img, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1)
+                    cv2.circle(img_cells, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1)
                     # Show the image with the detected edges
-                cf.show_image(img, "Casillas")
+                cf.show_image(img_cells, "Casillas")
             cells.append(cell)
     return cells
 
@@ -133,6 +135,9 @@ if debug:
 
     # Save the image with the detected edges
     cv2.imwrite("edge-detection/results/" + name + "_edges.png", img)
+    
+    # Clean the image
+    img = cv2.imread("edge-detection/assets/" + name + ".png")
 
 cells = calculate_cells(points)
 # print(cells)
@@ -180,14 +185,36 @@ for line in lines:
     
     chess_pieces.append(ChessPiece(cell_coords=result,piece_coords=(l,t,r,b), piece_type=chess_piece))
 
-for piece in chess_pieces:
-    cv2.circle(img, (int(piece.cell_coords[0][0]), int(piece.cell_coords[0][1])), 5, (0, 0, 255), -1)
-    cv2.circle(img, (int(piece.cell_coords[1][0]), int(piece.cell_coords[1][1])), 5, (0, 0, 255), -1)
-    cv2.circle(img, (int(piece.cell_coords[2][0]), int(piece.cell_coords[2][1])), 5, (0, 0, 255), -1)
-    cv2.circle(img, (int(piece.cell_coords[3][0]), int(piece.cell_coords[3][1])), 5, (0, 0, 255), -1)
-    cv2.rectangle(img, (int(piece.piece_coords[0]), int(piece.piece_coords[1])), (int(piece.piece_coords[2]), int(piece.piece_coords[3])), (0, 0, 255), 2)
+# Order the pieces to chess board order
+ordered_chess_pieces = []
+i = 0
+j = 0
+chessboard = [[None for i in range(8)] for j in range(8)]
+for cell in cells:
+    if i == 8:
+        i = 0
+        j += 1
+    for piece in chess_pieces:
+        if np.array_equal(piece.cell_coords, cell):
+            print(piece.piece_type, i, j)  
+            chessboard[i][j] = piece
+    i += 1
 
-cf.show_image(img, "Result")    
+# Invert the rows (for FEN notation)
+chessboard = chessboard[::-1]
+
+if debug:
+    # Draw the pieces on the image
+    for i in range(8):
+        for j in range(8):
+            piece = chessboard[i][j]
+            if piece is not None:
+                l, t, r, b = piece.piece_coords
+                cv2.rectangle(img, (int(l), int(t)), (int(r), int(b)), (0, 255, 0), 2)
+                cv2.circle(img, (int(piece.cell_coords[0][0]), int(piece.cell_coords[0][1])), 5, (0, 0, 255), -1)
+                cv2.circle(img, (int(piece.cell_coords[1][0]), int(piece.cell_coords[1][1])), 5, (0, 0, 255), -1)
+                cv2.circle(img, (int(piece.cell_coords[2][0]), int(piece.cell_coords[2][1])), 5, (0, 0, 255), -1)
+                cv2.circle(img, (int(piece.cell_coords[3][0]), int(piece.cell_coords[3][1])), 5, (0, 0, 255), -1)
+            cf.show_image(img,"Chess pieces")
+
 cv2.imwrite("edge-detection/results/" + name + "_result.png", img)
-
-
