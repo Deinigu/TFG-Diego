@@ -11,6 +11,12 @@ from scipy import cluster, spatial
 from sympy import Point, Polygon
 import chess_pieces_FEN_definition as FEN
 
+class ChessPiece:
+    def __init__(self, cell_coords, piece_coords, piece_type):
+        self.cell_coords = cell_coords
+        self.piece_coords = piece_coords
+        self.piece_type = piece_type
+
 # Returns a array of 64 cells with the coordinates of the corners of each cell
 def calculate_cells(points):
     # Order the points by y coordinate (top to bottom)
@@ -137,6 +143,8 @@ with open("edge-detection/assets/labels/prueba_sin_fondo.txt") as f:
     lines = f.readlines()
 
 # Get the name of the chess pieces
+chess_pieces = []
+
 dh, dw, _ = img.shape
 for line in lines:
     # Split the numbers in the line
@@ -162,16 +170,24 @@ for line in lines:
         b = dh - 1
     piece_coords = (l, r, t, b)
     
+    # Get the cell where the piece is
     possible_cells = []
     for cell in cells:
         if is_piece_in_cell(piece_coords, cell):
             possible_cells.append(cell)
     
     result = get_cell_downer(possible_cells)
-    cv2.circle(img, (int(result[0][0]), int(result[0][1])), 5, (0, 0, 255), -1)
-    cv2.circle(img, (int(result[1][0]), int(result[1][1])), 5, (0, 0, 255), -1)
-    cv2.circle(img, (int(result[2][0]), int(result[2][1])), 5, (0, 0, 255), -1)
-    cv2.circle(img, (int(result[3][0]), int(result[3][1])), 5, (0, 0, 255), -1)
-    cv2.rectangle(img, (int(l), int(t)), (int(r), int(b)), (0, 0, 255), 2)
-    cf.show_image(img, "Result")    
     
+    chess_pieces.append(ChessPiece(cell_coords=result,piece_coords=(l,t,r,b), piece_type=chess_piece))
+
+for piece in chess_pieces:
+    cv2.circle(img, (int(piece.cell_coords[0][0]), int(piece.cell_coords[0][1])), 5, (0, 0, 255), -1)
+    cv2.circle(img, (int(piece.cell_coords[1][0]), int(piece.cell_coords[1][1])), 5, (0, 0, 255), -1)
+    cv2.circle(img, (int(piece.cell_coords[2][0]), int(piece.cell_coords[2][1])), 5, (0, 0, 255), -1)
+    cv2.circle(img, (int(piece.cell_coords[3][0]), int(piece.cell_coords[3][1])), 5, (0, 0, 255), -1)
+    cv2.rectangle(img, (int(piece.piece_coords[0]), int(piece.piece_coords[1])), (int(piece.piece_coords[2]), int(piece.piece_coords[3])), (0, 0, 255), 2)
+
+cf.show_image(img, "Result")    
+cv2.imwrite("edge-detection/results/" + name + "_result.png", img)
+
+
