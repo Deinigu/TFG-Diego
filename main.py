@@ -10,6 +10,8 @@ import numpy as np
 from scipy import cluster, spatial
 from sympy import Point, Polygon
 import chess_pieces_FEN_definition as FEN
+from datetime import datetime
+
 
 class ChessPiece:
     def __init__(self, cell_coords, piece_coords, piece_type):
@@ -17,55 +19,17 @@ class ChessPiece:
         self.piece_coords = piece_coords
         self.piece_type = piece_type
 
-# Returns a array of 64 cells with the coordinates of the corners of each cell
-def calculate_cells(points):
-    # Order the points by y coordinate (top to bottom)
-    coordinates = []
-    for point in points:
-        coordinates.append([point[0], point[1]])
-    coordinates = sorted(coordinates, key=lambda x: x[1])
-
-    # Knowing that the points are ordered from top to bottom, we can divide them into cells
-    cells = []
-    for i in range(0, len(coordinates)-9,1):
-        if ((i+1) % 9 > 0 or i == 0):
-            cell = np.array([coordinates[i],coordinates[i+1],coordinates[i+9],coordinates[i+10]])
-            if(debug):
-                for point in cell:
-                    cv2.circle(img, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1)
-                    # Show the image with the detected edges
-                cf.show_image(img, "Casillas")
-            cells.append(cell)
-    return cells
-
-def is_piece_in_cell(piece_coords, cell_coords):
-    l, r, t, b = piece_coords  # Coordenadas de la pieza
-    cell_tl, cell_tr, cell_bl, cell_br = cell_coords  # Coordenadas de la celda
-
-    cell_l = min(cell_tl[0], cell_tr[0], cell_bl[0], cell_br[0])
-    cell_r = max(cell_tl[0], cell_tr[0], cell_bl[0], cell_br[0])
-    cell_t = min(cell_tl[1], cell_tr[1], cell_bl[1], cell_br[1])
-    cell_b = max(cell_tl[1], cell_tr[1], cell_bl[1], cell_br[1])
-
-    if (l < cell_r and r > cell_l) and (t < cell_b and b > cell_t):
-        return True
-    else:
-        return False
-
-# Return the cell which is downer
-def get_cell_downer(cells):
-    downer = cells[0]
-    for cell in cells:
-        if cell[0][1] > downer[0][1]:
-            downer = cell
-    return downer
-
 # Debug
 debug = False
 
 # Load the image
 name = "prueba_sin_fondo"
-img = cv2.imread("edge-detection/assets/" + name + ".png")
+img = cv2.imread("workspace/assets/" + name + ".png")
+
+# Create a folder to save the results
+save_path_folder = "workspace/results/" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "_" + name + "/"
+if not os.path.exists(save_path_folder):
+    os.makedirs(save_path_folder)
 
 # Transform the image to grayscale
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -121,25 +85,24 @@ intersection_points = cf.line_intersections(h_lines, v_lines)
 points = cf.cluster_points(intersection_points)
 
 # Draw the points on the image
-if debug:
-    for point in points:
-        cv2.circle(img, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1)
+for point in points:
+    cv2.circle(img, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1)
     # Show the image with the detected edges
+if debug:
     cf.show_image(img, "Result")
 
-    # Create results directory if it does not exist
-    if not os.path.exists("edge-detection/results"):
-        os.makedirs("edge-detection/results")
+# Save the image with the detected edges
+cv2.imwrite(save_path_folder + name + "_edges.png", img)
+    
+# Clean the image
+img = cv2.imread("workspace/assets/" + name + ".png")
 
-    # Save the image with the detected edges
-    cv2.imwrite("edge-detection/results/" + name + "_edges.png", img)
-
-cells = calculate_cells(points)
+cells = cf.calculate_cells(points,debug,img.copy())
 # print(cells)
 
 # Read lines of the labels file
 lines = []
-with open("edge-detection/assets/labels/prueba_sin_fondo.txt") as f:
+with open("workspace/assets/labels/prueba_sin_fondo.txt") as f:
     lines = f.readlines()
 
 # Get the name of the chess pieces
@@ -153,7 +116,7 @@ for line in lines:
     
     # Get the name of the chess piece in FEN notation
     chess_piece = cf.get_piece_name(chesss_piece_number)
-    print(chess_piece)
+    # print(chess_piece)
     
     l = float((x - w / 2) * dw)
     r = float((x + w / 2) * dw)
@@ -173,21 +136,51 @@ for line in lines:
     # Get the cell where the piece is
     possible_cells = []
     for cell in cells:
-        if is_piece_in_cell(piece_coords, cell):
+        if cf.is_piece_in_cell(piece_coords, cell):
             possible_cells.append(cell)
     
-    result = get_cell_downer(possible_cells)
+    result = cf.get_cell_downer(possible_cells)
     
     chess_pieces.append(ChessPiece(cell_coords=result,piece_coords=(l,t,r,b), piece_type=chess_piece))
 
-for piece in chess_pieces:
-    cv2.circle(img, (int(piece.cell_coords[0][0]), int(piece.cell_coords[0][1])), 5, (0, 0, 255), -1)
-    cv2.circle(img, (int(piece.cell_coords[1][0]), int(piece.cell_coords[1][1])), 5, (0, 0, 255), -1)
-    cv2.circle(img, (int(piece.cell_coords[2][0]), int(piece.cell_coords[2][1])), 5, (0, 0, 255), -1)
-    cv2.circle(img, (int(piece.cell_coords[3][0]), int(piece.cell_coords[3][1])), 5, (0, 0, 255), -1)
-    cv2.rectangle(img, (int(piece.piece_coords[0]), int(piece.piece_coords[1])), (int(piece.piece_coords[2]), int(piece.piece_coords[3])), (0, 0, 255), 2)
+# Order the pieces to chess board order
+ordered_chess_pieces = []
+i = 0
+j = 0
+chessboard = [[None for i in range(8)] for j in range(8)]
+for cell in cells:
+    if i == 8:
+        i = 0
+        j += 1
+    for piece in chess_pieces:
+        if np.array_equal(piece.cell_coords, cell):
+            # print(piece.piece_type, i, j)  
+            chessboard[i][j] = piece
+    i += 1
 
-cf.show_image(img, "Result")    
-cv2.imwrite("edge-detection/results/" + name + "_result.png", img)
+# Invert the rows (for FEN notation)
+chessboard = chessboard[::-1]
 
+    # Draw the pieces on the image
+for i in range(8):
+    for j in range(8):
+        piece = chessboard[i][j]
+        if piece is not None:
+            l, t, r, b = piece.piece_coords
+            cv2.rectangle(img, (int(l), int(t)), (int(r), int(b)), (0, 255, 0), 2)
+            cv2.circle(img, (int(piece.cell_coords[0][0]), int(piece.cell_coords[0][1])), 5, (0, 0, 255), -1)
+            cv2.circle(img, (int(piece.cell_coords[1][0]), int(piece.cell_coords[1][1])), 5, (0, 0, 255), -1)
+            cv2.circle(img, (int(piece.cell_coords[2][0]), int(piece.cell_coords[2][1])), 5, (0, 0, 255), -1)
+            cv2.circle(img, (int(piece.cell_coords[3][0]), int(piece.cell_coords[3][1])), 5, (0, 0, 255), -1)
+            if debug:
+                cf.show_image(img,"Chess pieces")
 
+cv2.imwrite(save_path_folder + name + "_result.png", img)
+
+# Generate the FEN notation
+fen = cf.generate_fen_notation(chessboard)
+print("https://lichess.org/editor/" + fen)
+
+# Save the FEN notation in a file
+with open(save_path_folder + name + "_fen.txt", "w") as f:
+    f.write(fen)
