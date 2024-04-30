@@ -25,6 +25,9 @@ MyEnv/*
 MyEnv/
 data/test/labels.cache
 
+# Ignore workspace/results folder
+workspace/results/*
+
 # Ignore python cache
 __pycache__/
 *.pyc

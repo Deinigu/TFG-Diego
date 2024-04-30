@@ -12,7 +12,6 @@ from sympy import Point, Polygon
 import chess_pieces_FEN_definition as FEN
 from datetime import datetime
 
-
 class ChessPiece:
     def __init__(self, cell_coords, piece_coords, piece_type):
         self.cell_coords = cell_coords
@@ -22,14 +21,25 @@ class ChessPiece:
 # Debug
 debug = False
 
+# Workspaces paths
+workspace_path = "workspace/"
+images_path = workspace_path + "images/"
+results_path = workspace_path + "results/"
+
+# Model path
+model_path = "runs/train/weights/best.pt"
+
 # Load the image
-name = "prueba_sin_fondo"
-img = cv2.imread("workspace/assets/" + name + ".png")
+name = "test"
+img = cv2.imread(images_path + name + ".png")
 
 # Create a folder to save the results
-save_path_folder = "workspace/results/" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "_" + name + "/"
+save_path_folder = results_path + datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "_" + name + "/"
 if not os.path.exists(save_path_folder):
     os.makedirs(save_path_folder)
+
+# Predict the chess pieces in the image
+results = cf.predict_chess_pieces(images_path + name + ".png", model_path, save_path_folder)
 
 # Transform the image to grayscale
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -95,14 +105,14 @@ if debug:
 cv2.imwrite(save_path_folder + name + "_edges.png", img)
     
 # Clean the image
-img = cv2.imread("workspace/assets/" + name + ".png")
+img = cv2.imread(images_path + name + ".png")
 
 cells = cf.calculate_cells(points,debug,img.copy())
 # print(cells)
 
 # Read lines of the labels file
 lines = []
-with open("workspace/assets/labels/prueba_sin_fondo.txt") as f:
+with open(save_path_folder + "predict/labels/" + name + ".txt") as f:
     lines = f.readlines()
 
 # Get the name of the chess pieces
@@ -152,6 +162,8 @@ for cell in cells:
     if i == 8:
         i = 0
         j += 1
+    if j == 8:
+        break
     for piece in chess_pieces:
         if np.array_equal(piece.cell_coords, cell):
             # print(piece.piece_type, i, j)  

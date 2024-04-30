@@ -9,6 +9,16 @@ import numpy as np
 from scipy import cluster, spatial
 from sympy import Polygon
 import chess_pieces_FEN_definition as FEN
+from ultralytics import YOLO
+
+# Predict the chess pieces in the image
+def predict_chess_pieces(image_path, model_path, save_path_folder):
+    # Load the model
+    model = YOLO(model=model_path, task="detect")
+
+    # Predict on the image
+    results = model.predict(source=image_path, imgsz=640, save_txt=True, save=True, project=save_path_folder)
+    return results
 
 # Show an image and wait for a key press
 def show_image(img, name="Debug"):
@@ -94,14 +104,15 @@ def generate_fen_notation(chessboard):
         if i < 7:
             fen += "/"
     return fen
-    
+
 # Returns a array of 64 cells with the coordinates of the corners of each cell
 def calculate_cells(points, debug=False, img_cells=None):
     # Order the points by y coordinate (top to bottom)
     coordinates = []
     for point in points:
         coordinates.append([point[0], point[1]])
-    coordinates = sorted(coordinates, key=lambda x: x[1])
+    coordinates = sorted(coordinates, key=lambda x: (round(x[1]), round(x[0])))
+    # print(coordinates)
 
     # Knowing that the points are ordered from top to bottom, we can divide them into cells
     cells = []
