@@ -19,7 +19,7 @@ class ChessPiece:
         self.piece_type = piece_type
 
 # Debug
-debug = True
+debug = False
 
 # Workspaces paths
 workspace_path = "workspace/"
@@ -162,6 +162,8 @@ for cell in cells:
     if i == 8:
         i = 0
         j += 1
+    if j == 8:
+        break
     for piece in chess_pieces:
         if np.array_equal(piece.cell_coords, cell):
             # print(piece.piece_type, i, j)  

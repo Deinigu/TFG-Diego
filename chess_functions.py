@@ -111,7 +111,8 @@ def calculate_cells(points, debug=False, img_cells=None):
     coordinates = []
     for point in points:
         coordinates.append([point[0], point[1]])
-    coordinates = sorted(coordinates, key=lambda x: (x[1]))
+    coordinates = sorted(coordinates, key=lambda x: (round(x[1]), round(x[0])))
+    # print(coordinates)
 
     # Knowing that the points are ordered from top to bottom, we can divide them into cells
     cells = []
