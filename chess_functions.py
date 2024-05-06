@@ -24,6 +24,23 @@ def predict_chess_pieces(image_path, model_path, save_path_folder):
     return results
 
 
+# Initialize the image
+def initialize_image(image_path):
+    # Load the image
+    img = cv2.imread(image_path)
+    # Resize the image to half if it is too big
+    if img.shape[0] > 1000 or img.shape[1] > 1000:
+        print("Your image is too big! It will be resized.")
+        img = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
+    return img
+
+
+# Create an image
+def create_img(img):
+    result = img.copy()
+    return result
+
+
 # Show an image and wait for a key press
 def show_image(img, name="Debug"):
     cv2.imshow(name, img)
@@ -124,8 +141,36 @@ def calculate_cells(points, debug=False, img_cells=None):
     # Create a list of virtual points where the y is the mean of the y of the points in the same row
     points = sorted(points, key=lambda x: x[1])
     virtual_points = []
-    for i in range(0, len(points), 9):
-        row = points[i : i + 9]
+
+    # Divide the points into rows based on the y coordinate
+    rows = []
+    current_row = []
+    current_y = points[0][1]
+
+    # Tolerance
+    tolerance = 20
+
+    for point in points:
+        if abs(point[1] - current_y) <= tolerance:
+            current_row.append(point)
+        else:
+            rows.append(current_row)
+            current_row = [point]
+            current_y = point[1]
+
+    # Add the last row
+    rows.append(current_row)
+
+    if debug:
+        img_rows = create_img(img_cells)
+        # Draw the points
+        for row in rows:
+            for point in row:
+                cv2.circle(img_rows, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1)
+            show_image(img_rows, "Rows")
+
+    # Calculate the mean y of each row
+    for row in rows:
         y = mean([point[1] for point in row])
         row_with_virtual_y = []
 
@@ -147,25 +192,10 @@ def calculate_cells(points, debug=False, img_cells=None):
     for i in order:
         coordinates.append(points[i])
 
-    # print("POINTS\n")
-    # for point in points:
-    #     print(point)
-    # print("VIRTUAL POINTS\n")
-    # for point in virtual_points:
-    #     print(point)
-
-    # Order the points by y coordinate (top to bottom)
-    # coordinates = []
-    # for point in points:
-    #    coordinates.append([point[0], point[1]])
-    # coordinates = sorted(coordinates, key=lambda x: (round(x[1]), round(x[0])))
-    # print(coordinates)
-
-    # Order the points by the virtual points (top to bottom)
-
     # Knowing that the points are ordered from top to bottom, we can divide them into cells
     cells = []
-    for i in range(0, len(coordinates) - 9, 1):
+
+    for i in range(0, len(coordinates) - 10, 1):
         if (i + 1) % 9 > 0 or i == 0:
             cell = np.array(
                 [
@@ -180,8 +210,9 @@ def calculate_cells(points, debug=False, img_cells=None):
                     cv2.circle(
                         img_cells, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1
                     )
-                    # Show the image with the detected edges
-                show_image(img_cells, "Casillas")
+                # Show the image with the detected edges
+                show_image(img_cells, "Cells")
+
             cells.append(cell)
     return cells
 
