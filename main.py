@@ -19,7 +19,7 @@ class ChessPiece:
         self.piece_type = piece_type
 
 # Debug
-debug = False
+debug = True
 
 # Workspaces paths
 workspace_path = "workspace/"
@@ -30,8 +30,8 @@ results_path = workspace_path + "results/"
 model_path = "runs/train/weights/best.pt"
 
 # Load the image
-name = "test"
-img = cv2.imread(images_path + name + ".png")
+name = "test4"
+img = cf.initialize_image(images_path + name + ".png")
 
 # Create a folder to save the results
 save_path_folder = results_path + datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "_" + name + "/"
@@ -64,7 +64,7 @@ lines = cf.hough_line(edges)
 h_lines, v_lines = cf.h_v_lines(lines)
 
 if debug:
-    img_houg = img.copy()
+    img_houg = cf.create_img(img)
     if len(h_lines) < 9 or len(v_lines) < 9:
         print("There are not enough horizontal and vertical lines in this image. Try it anyway!")
     # Draw the lines on the image
@@ -97,7 +97,8 @@ points = cf.cluster_points(intersection_points)
 # Draw the points on the image
 for point in points:
     cv2.circle(img, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1)
-    # Show the image with the detected edges
+
+# Show the image with the detected edges
 if debug:
     cf.show_image(img, "Result")
 
@@ -105,9 +106,9 @@ if debug:
 cv2.imwrite(save_path_folder + name + "_edges.png", img)
     
 # Clean the image
-img = cv2.imread(images_path + name + ".png")
+img = cf.initialize_image(images_path + name + ".png")
 
-cells = cf.calculate_cells(points,debug,img.copy())
+cells = cf.calculate_cells(points,debug,cf.create_img(img))
 # print(cells)
 
 # Read lines of the labels file
@@ -173,17 +174,17 @@ for cell in cells:
 # Invert the rows (for FEN notation)
 chessboard = chessboard[::-1]
 
-    # Draw the pieces on the image
+# Draw the pieces on the image
 for i in range(8):
     for j in range(8):
         piece = chessboard[i][j]
         if piece is not None:
             l, t, r, b = piece.piece_coords
             cv2.rectangle(img, (int(l), int(t)), (int(r), int(b)), (0, 255, 0), 2)
-            cv2.circle(img, (int(piece.cell_coords[0][0]), int(piece.cell_coords[0][1])), 5, (0, 0, 255), -1)
-            cv2.circle(img, (int(piece.cell_coords[1][0]), int(piece.cell_coords[1][1])), 5, (0, 0, 255), -1)
-            cv2.circle(img, (int(piece.cell_coords[2][0]), int(piece.cell_coords[2][1])), 5, (0, 0, 255), -1)
-            cv2.circle(img, (int(piece.cell_coords[3][0]), int(piece.cell_coords[3][1])), 5, (0, 0, 255), -1)
+            cv2.circle(img, (int(piece.cell_coords[0][0]), int(piece.cell_coords[0][1])), 5, (0,0,255), -1)
+            cv2.circle(img, (int(piece.cell_coords[1][0]), int(piece.cell_coords[1][1])), 5, (0,0,255), -1)
+            cv2.circle(img, (int(piece.cell_coords[2][0]), int(piece.cell_coords[2][1])), 5, (0,0,255), -1)
+            cv2.circle(img, (int(piece.cell_coords[3][0]), int(piece.cell_coords[3][1])), 5, (0,0,255), -1)
             if debug:
                 cf.show_image(img,"Chess pieces")
 
