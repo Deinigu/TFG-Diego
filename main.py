@@ -30,7 +30,7 @@ results_path = workspace_path + "results/"
 model_path = "runs/train/weights/best.pt"
 
 # Load the image
-name = "test4"
+name = "test2"
 img = cf.initialize_image(images_path + name + ".png")
 
 # Create a folder to save the results
@@ -142,7 +142,7 @@ for line in lines:
         t = 0
     if b > dh - 1:
         b = dh - 1
-    piece_coords = (l, r, t, b)
+    piece_coords = (l, t, r, b)
     
     # Get the cell where the piece is
     possible_cells = []
@@ -150,7 +150,7 @@ for line in lines:
         if cf.is_piece_in_cell(piece_coords, cell):
             possible_cells.append(cell)
     
-    result = cf.get_cell_downer(possible_cells)
+    result = cf.get_nearest_cell(piece_coords, possible_cells)
     
     chess_pieces.append(ChessPiece(cell_coords=result,piece_coords=(l,t,r,b), piece_type=chess_piece))
 

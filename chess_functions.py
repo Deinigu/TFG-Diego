@@ -216,10 +216,16 @@ def calculate_cells(points, debug=False, img_cells=None):
             cells.append(cell)
     return cells
 
+def mean_point(point1, point2):
+    print(point1, point2)
+    return (point1[0] + point2[0]) / 2, (point1[1] + point2[1]) / 2
+
+def euclidean_distance(point1, point2):
+    return math.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
 
 def is_piece_in_cell(piece_coords, cell_coords):
-    l, r, t, b = piece_coords  # Coordenadas de la pieza
-    cell_tl, cell_tr, cell_bl, cell_br = cell_coords  # Coordenadas de la celda
+    l, t, r, b = piece_coords  # Piece coordinates
+    cell_tl, cell_tr, cell_bl, cell_br = cell_coords  # Cell coordinates
 
     cell_l = min(cell_tl[0], cell_tr[0], cell_bl[0], cell_br[0])
     cell_r = max(cell_tl[0], cell_tr[0], cell_bl[0], cell_br[0])
@@ -233,9 +239,28 @@ def is_piece_in_cell(piece_coords, cell_coords):
 
 
 # Return the cell which is downer
-def get_cell_downer(cells):
-    downer = cells[0]
+def get_nearest_cell(piece_coords, cells):
+    l, t, r, b = piece_coords  # Piece coordinates
+        
+    # Get the mean point of the two lower points of the piece
+    piece_mean_point = mean_point((l, b), (r, b))
+    
+    cell_distance = 1000000 # Big number
+    
+    nearest_cell = cells[0]
+    
+    # Get the cell which is nearest to the piece
     for cell in cells:
-        if cell[0][1] > downer[0][1]:
-            downer = cell
-    return downer
+        corner_distance = 10000000 # Big number
+        for corner in cell:
+            corner_distance_temp = euclidean_distance(piece_mean_point, (corner[0], corner[1]))
+            # Update the nearest corner distance in this cell
+            if corner_distance_temp < corner_distance:
+                corner_distance = corner_distance_temp
+        
+        # Update the nearest cell distance
+        if corner_distance < cell_distance:
+            cell_distance = corner_distance
+            nearest_cell = cell
+        
+    return nearest_cell
