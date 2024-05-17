@@ -19,7 +19,7 @@ class ChessPiece:
         self.piece_type = piece_type
 
 # Debug
-debug = True
+debug = False
 
 # Workspaces paths
 workspace_path = "workspace/"
@@ -30,7 +30,7 @@ results_path = workspace_path + "results/"
 model_path = "runs/train/weights/best.pt"
 
 # Load the image
-name = "test2"
+name = "test4"
 img = cf.initialize_image(images_path + name + ".png")
 
 # Create a folder to save the results

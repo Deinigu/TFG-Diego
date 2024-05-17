@@ -217,7 +217,6 @@ def calculate_cells(points, debug=False, img_cells=None):
     return cells
 
 def mean_point(point1, point2):
-    print(point1, point2)
     return (point1[0] + point2[0]) / 2, (point1[1] + point2[1]) / 2
 
 def euclidean_distance(point1, point2):
@@ -246,21 +245,15 @@ def get_nearest_cell(piece_coords, cells):
     piece_mean_point = mean_point((l, b), (r, b))
     
     cell_distance = 1000000 # Big number
-    
-    nearest_cell = cells[0]
-    
-    # Get the cell which is nearest to the piece
-    for cell in cells:
-        corner_distance = 10000000 # Big number
-        for corner in cell:
-            corner_distance_temp = euclidean_distance(piece_mean_point, (corner[0], corner[1]))
-            # Update the nearest corner distance in this cell
-            if corner_distance_temp < corner_distance:
-                corner_distance = corner_distance_temp
+    nearest_cell = None
         
+    # Get the cell which its mean point in the lowest line is nearest to the piece's mean point
+    for cell in cells:
+        
+        cell_distance_temp = euclidean_distance(piece_mean_point, mean_point(cell[2], cell[3]))
         # Update the nearest cell distance
-        if corner_distance < cell_distance:
-            cell_distance = corner_distance
+        if cell_distance_temp < cell_distance:
+            cell_distance = cell_distance_temp
             nearest_cell = cell
         
     return nearest_cell
