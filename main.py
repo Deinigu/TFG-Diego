@@ -30,8 +30,22 @@ results_path = workspace_path + "results/"
 model_path = "runs/train/weights/best.pt"
 
 # Load the image
-name = "test4"
-img = cf.initialize_image(images_path + name + ".png")
+supported_image_formats = [".png", ".jpg", ".jpeg"]
+name = "test"
+img = None
+for format in supported_image_formats:
+    try:
+        img = cf.initialize_image(images_path + name + format)
+        if img is not None:
+            break
+    except:
+        continue
+
+# Check if the image was loaded
+if img is None:
+    print("No se pudo cargar la imagen. Compruebe que la imagen es de un formato correcto: " + str(supported_image_formats) + ".")
+    # Finish the program
+    exit()
 
 # Create a folder to save the results
 save_path_folder = results_path + datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "_" + name + "/"
