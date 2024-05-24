@@ -19,7 +19,7 @@ class ChessPiece:
         self.piece_type = piece_type
 
 # Debug
-debug = False
+debug = True
 
 # Workspaces paths
 workspace_path = "workspace/"
@@ -31,7 +31,7 @@ model_path = "runs/train/weights/best.pt"
 
 # Load the image
 supported_image_formats = [".png", ".jpg", ".jpeg"]
-name = "test"
+name = "test3"
 img = None
 for format in supported_image_formats:
     try:
@@ -167,6 +167,9 @@ for line in lines:
     result = cf.get_nearest_cell(piece_coords, possible_cells)
     
     chess_pieces.append(ChessPiece(cell_coords=result,piece_coords=(l,t,r,b), piece_type=chess_piece))
+
+
+##TODO: Filtrar las celdas en función de la pieza más arriba a la izquierda, más abajo a la derecha, etc.
 
 # Order the pieces to chess board order
 ordered_chess_pieces = []

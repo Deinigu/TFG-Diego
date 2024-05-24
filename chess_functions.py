@@ -161,6 +161,9 @@ def calculate_cells(points, debug=False, img_cells=None):
     # Add the last row
     rows.append(current_row)
 
+    # Save the size of each row
+    row_sizes = [len(row) for row in rows]
+
     if debug:
         img_rows = create_img(img_cells)
         # Draw the points
@@ -195,14 +198,19 @@ def calculate_cells(points, debug=False, img_cells=None):
     # Knowing that the points are ordered from top to bottom, we can divide them into cells
     cells = []
 
-    for i in range(0, len(coordinates) - 10, 1):
-        if (i + 1) % 9 > 0 or i == 0:
+    # Choose the cells based on the row sizes
+    size_index = 0
+    cell_row = row_sizes[size_index]
+    for i in range(0, len(coordinates) - row_sizes[len(row_sizes) - 1], 1):
+        cell_row = row_sizes[size_index]
+        next_cell_row = row_sizes[size_index + 1]
+        if (i + 1) % cell_row > 0 or i == 0:
             cell = np.array(
                 [
                     coordinates[i],
                     coordinates[i + 1],
-                    coordinates[i + 9],
-                    coordinates[i + 10],
+                    coordinates[i + next_cell_row],
+                    coordinates[i + next_cell_row + 1],
                 ]
             )
             if debug:
@@ -210,17 +218,30 @@ def calculate_cells(points, debug=False, img_cells=None):
                     cv2.circle(
                         img_cells, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1
                     )
+                    if next_cell_row == 0:
+                        cv2.circle(
+                            img_cells,
+                            (int(point[0]), int(point[1])),
+                            5,
+                            (0, 255, 0),
+                            -1,
+                        )
                 # Show the image with the detected edges
                 show_image(img_cells, "Cells")
 
             cells.append(cell)
+        else:
+            size_index += 1 if size_index < len(row_sizes) - 1 else 0
     return cells
+
 
 def mean_point(point1, point2):
     return (point1[0] + point2[0]) / 2, (point1[1] + point2[1]) / 2
 
+
 def euclidean_distance(point1, point2):
     return math.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
+
 
 def is_piece_in_cell(piece_coords, cell_coords):
     l, t, r, b = piece_coords  # Piece coordinates
@@ -240,20 +261,22 @@ def is_piece_in_cell(piece_coords, cell_coords):
 # Return the cell which is downer
 def get_nearest_cell(piece_coords, cells):
     l, t, r, b = piece_coords  # Piece coordinates
-        
+
     # Get the mean point of the two lower points of the piece
     piece_mean_point = mean_point((l, b), (r, b))
-    
-    cell_distance = 1000000 # Big number
+
+    cell_distance = 1000000  # Big number
     nearest_cell = None
-        
+
     # Get the cell which its mean point in the lowest line is nearest to the piece's mean point
     for cell in cells:
-        
-        cell_distance_temp = euclidean_distance(piece_mean_point, mean_point(cell[2], cell[3]))
+
+        cell_distance_temp = euclidean_distance(
+            piece_mean_point, mean_point(cell[2], cell[3])
+        )
         # Update the nearest cell distance
         if cell_distance_temp < cell_distance:
             cell_distance = cell_distance_temp
             nearest_cell = cell
-        
+
     return nearest_cell
