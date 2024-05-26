@@ -29,3 +29,19 @@ chess_pieces = {
     10: 'P',
     11: 'Q'
 }
+
+# FEM Notation to Unicode chess pieces
+chess_pieces_unicode = {
+    'K': '♚',
+    'B': '♝',
+    'N': '♞',
+    'R': '♜',
+    'P': '♟',
+    'Q': '♛',
+    'k': '♔',
+    'b': '♗',
+    'n': '♘',
+    'r': '♖',
+    'p': '♙',
+    'q': '♕'
+}

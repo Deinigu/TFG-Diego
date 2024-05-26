@@ -8,7 +8,7 @@ import cv2
 import numpy as np
 from scipy import cluster, spatial
 from sympy import Polygon
-import chess_pieces_FEN_definition as FEN
+import chess_pieces_FEN as FEN
 from ultralytics import YOLO
 
 
@@ -136,8 +136,30 @@ def generate_fen_notation(chessboard):
     return fen
 
 
-# Returns a array of 64 cells with the coordinates of the corners of each cell
+# Print the chessboard
+def print_chessboard(chessboard, unicode=True):
+    for i in range(8):
+        for j in range(8):
+            if chessboard[i][j] is not None:
+                (
+                    print(
+                        FEN.chess_pieces_unicode[chessboard[i][j].piece_type], end=" "
+                    )
+                    if unicode
+                    else print(chessboard[i][j].piece_type, end=" ")
+                )
+            else:
+                print("▢", end=" ") if unicode else print("X", end=" ")
+        print()
+    print()
+
+
+# Returns a array of cells with the coordinates of the corners of each cell
 def calculate_cells(points, debug=False, img_cells=None):
+
+    # Filter the points to remove negative values
+    points = [point for point in points if point[0] > 0 and point[1] > 0]
+
     # Create a list of virtual points where the y is the mean of the y of the points in the same row
     points = sorted(points, key=lambda x: x[1])
     virtual_points = []
@@ -148,7 +170,7 @@ def calculate_cells(points, debug=False, img_cells=None):
     current_y = points[0][1]
 
     # Tolerance
-    tolerance = 20
+    tolerance = 30
 
     for point in points:
         if abs(point[1] - current_y) <= tolerance:
@@ -200,38 +222,36 @@ def calculate_cells(points, debug=False, img_cells=None):
 
     # Choose the cells based on the row sizes
     size_index = 0
-    cell_row = row_sizes[size_index]
-    for i in range(0, len(coordinates) - row_sizes[len(row_sizes) - 1], 1):
-        cell_row = row_sizes[size_index]
-        next_cell_row = row_sizes[size_index + 1]
-        if (i + 1) % cell_row > 0 or i == 0:
+    row_size = row_sizes[size_index]
+    iterator = 0
+    # print(row_sizes)
+    for i in range(0, len(points) - row_sizes[len(row_sizes) - 1], 1):
+        row_size = row_sizes[size_index]
+        if (iterator + 1) % row_size > 0 or iterator == 0:
             cell = np.array(
                 [
                     coordinates[i],
                     coordinates[i + 1],
-                    coordinates[i + next_cell_row],
-                    coordinates[i + next_cell_row + 1],
+                    coordinates[i + row_size],
+                    coordinates[i + row_size + 1],
                 ]
             )
+            iterator += 1
+            # Draw the points of the cell
+            for point in cell:
+                cv2.circle(
+                    img_cells, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1
+                )
+            # Draw the lines of the cell
+            cv2.polylines(img_cells, [cell.astype(int)], True, (0, 255, 0), 2)
             if debug:
-                for point in cell:
-                    cv2.circle(
-                        img_cells, (int(point[0]), int(point[1])), 5, (0, 0, 255), -1
-                    )
-                    if next_cell_row == 0:
-                        cv2.circle(
-                            img_cells,
-                            (int(point[0]), int(point[1])),
-                            5,
-                            (0, 255, 0),
-                            -1,
-                        )
                 # Show the image with the detected edges
                 show_image(img_cells, "Cells")
 
             cells.append(cell)
         else:
-            size_index += 1 if size_index < len(row_sizes) - 1 else 0
+            size_index += 1 if size_index + 1 < len(row_sizes) - 1 else 0
+            iterator = 0
     return cells
 
 
