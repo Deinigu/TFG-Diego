@@ -33,7 +33,7 @@ model_path = "runs/train/weights/best.pt"
 
 # Load the image
 supported_image_formats = [".png", ".jpg", ".jpeg"]
-name = "test5"
+name = "test7"
 img = None
 for format in supported_image_formats:
     try:
@@ -223,6 +223,7 @@ for piece in chess_pieces:
         extra_column_needed = True
         break
 
+# Add extra columns if needed
 while extra_column_needed and len(rest_of_cells) > 0:
     # Move all the pieces to the left
     for i in range(8):

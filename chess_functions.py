@@ -170,7 +170,7 @@ def calculate_cells(points, debug=False, img_cells=None):
     current_y = points[0][1]
 
     # Tolerance
-    tolerance = 30
+    tolerance = 20
 
     for point in points:
         if abs(point[1] - current_y) <= tolerance:
@@ -182,9 +182,6 @@ def calculate_cells(points, debug=False, img_cells=None):
 
     # Add the last row
     rows.append(current_row)
-
-    # Save the size of each row
-    row_sizes = [len(row) for row in rows]
 
     if debug:
         img_rows = create_img(img_cells)
@@ -216,18 +213,32 @@ def calculate_cells(points, debug=False, img_cells=None):
     coordinates = []
     for i in order:
         coordinates.append(points[i])
-
+        
+    # Delete the rows with less or equal to the umbral of points
+    points_umbral = 4
+    for row in rows:
+        if len(row) <= points_umbral:
+            if debug:
+                print("Deleting row this row: ", row)
+            for point in row:
+                coordinates.remove(point)
+            rows.remove(row)
+    
     # Knowing that the points are ordered from top to bottom, we can divide them into cells
     cells = []
-
+    
+    # Save the size of each row
+    row_sizes = [len(row) for row in rows]
+    
     # Choose the cells based on the row sizes
     size_index = 0
     row_size = row_sizes[size_index]
     iterator = 0
     # print(row_sizes)
-    for i in range(0, len(points) - row_sizes[len(row_sizes) - 1], 1):
+    for i in range(0, len(coordinates) - row_sizes[len(row_sizes) - 1], 1):
         row_size = row_sizes[size_index]
-        if (iterator + 1) % row_size > 0 or iterator == 0:
+        print("i: ", i, "Row index: ", size_index, "Iterator: ", iterator, "Row size: ", row_size, "Len coordinates: ", len(coordinates), "End: ", len(coordinates) - row_sizes[len(row_sizes) - 1])
+        if ((iterator + 1) % row_size > 0 or iterator == 0) and i + row_size + 1 < len(coordinates):
             cell = np.array(
                 [
                     coordinates[i],
