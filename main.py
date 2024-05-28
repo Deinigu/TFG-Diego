@@ -62,7 +62,7 @@ if not os.path.exists(save_path_folder):
 
 # Predict the chess pieces in the image
 results = cf.predict_chess_pieces(
-    images_path + name + ".png", model_path, save_path_folder
+    images_path + name + format, model_path, save_path_folder
 )
 
 # Transform the image to grayscale
@@ -132,7 +132,7 @@ if debug:
 cv2.imwrite(save_path_folder + name + "_edges.png", img)
 
 # Clean the image
-img = cf.initialize_image(images_path + name + ".png")
+img = cf.initialize_image(images_path + name + format)
 
 # Calculate the cells
 img_cells = cf.create_img(img)
