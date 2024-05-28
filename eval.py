@@ -3,6 +3,7 @@ import glob
 from ultralytics import YOLO
 import os
 from datetime import datetime
+import eval_functions as ef
 
 # Get the current date and time
 now = datetime.now()
@@ -34,16 +35,33 @@ for weight in weights:
     # Test the model with val test folder
     model.val(data=test_dataset, save=True, project=val_dir)
 
-### PREDICT ON TEST IMAGES ###
+### PREDICT ON TEST IMAGES WITH DIFFERENT BRIGHTNESS CONFIGURATION ###
+# i=1 is the original brightness
+# i=3 is less brightness
+# i=9 is the least brightness
 # Get all test images
-test_images = glob.glob("data/test/images/*.png")
-# Iterate through all weights
-for weight in weights:
-    # Load the model
-    model = YOLO(model=weight, task="detect")
+brightness_values = [1,3,9]
+for i in brightness_values:
+    # Get all test images
+    test_images = glob.glob("data/test/images/*.png")
 
-    # Predict on test images
-    model.predict(source=test_images, imgsz=640, save_txt=True, save=True, project=pred_dir)
+    # Adjust the brightness of the test images with the value of i
+    test_images = ef.adjust_brightness(test_images, i)
+
+    # Iterate through all weights
+    for weight in weights:
+        # Load the model
+        model = YOLO(model=weight, task="detect")
+
+        # Predict on test images
+        model.predict(
+            source=test_images,
+            imgsz=640,
+            save_conf=True,
+            save_txt=True,
+            save=True,
+            project=pred_dir + "brightness_" + str(i) + "/",
+        )
 
 
 ### MEAN AND STANDARD DEVIATION CALCULATIONS ###
