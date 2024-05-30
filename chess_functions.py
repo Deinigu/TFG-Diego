@@ -288,7 +288,7 @@ def is_piece_in_cell(piece_coords, cell_coords):
         return False
 
 
-# Return the cell which is downer
+# Return the cell where the piece is located
 def get_nearest_cell(piece_coords, cells):
     l, t, r, b = piece_coords  # Piece coordinates
 
