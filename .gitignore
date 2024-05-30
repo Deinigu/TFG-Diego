@@ -13,16 +13,22 @@
 *.vsix
 
 # Ignore eval folder
-eval/*
-eval/
+workspace/eval/*
+workspace/eval/
 
 # Ignore runs folder
 runs/*
 runs/
 
+# Ignore data/brightness_variations folder
+data/brightness_variations/*
+data/brightness_variations/
+
 # Ignore MyEnv folder
 MyEnv/*
 MyEnv/
+
+# Ignore data/test/labels.cache
 data/test/labels.cache
 
 # Ignore workspace/results folder
