@@ -33,6 +33,7 @@ data/test/labels.cache
 
 # Ignore workspace/results folder
 workspace/results/*
+workspace/results/
 
 # Ignore python cache
 __pycache__/

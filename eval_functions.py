@@ -16,3 +16,8 @@ def adjust_brightness(images, b):
         image = Image.fromarray(np.uint8(imgArray))
         result.append(image)
     return result
+
+# Save images with their original names
+def save_images(images, path, names):
+    for i, image in enumerate(images):
+        image.save(path + names[i])
