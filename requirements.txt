@@ -9,3 +9,4 @@ pyyaml
 numpy
 scikit-learn
 sympy
+shutil

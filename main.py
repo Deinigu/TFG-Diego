@@ -12,7 +12,7 @@ from sympy import Point, Polygon
 import chess_pieces_FEN as FEN
 from datetime import datetime
 
-
+# Chess piece class
 class ChessPiece:
     def __init__(self, cell_coords, piece_coords, piece_type):
         self.cell_coords = cell_coords
@@ -33,7 +33,7 @@ model_path = "runs/train/weights/best.pt"
 
 # Load the image
 supported_image_formats = [".png", ".jpg", ".jpeg"]
-name = "test7"
+name = "test"
 img = None
 for format in supported_image_formats:
     try:
@@ -214,7 +214,7 @@ for cell in cells:
 
 if debug:
     print("Chessboard (no extra column process):")
-    cf.print_chessboard(chessboard[::-1]) # Invert the rows (for FEN notation)
+    cf.print_chessboard(chessboard[::-1])  # Invert the rows (for FEN notation)
 
 # Check if there are any pieces left
 extra_column_needed = False
@@ -252,7 +252,7 @@ while extra_column_needed and len(rest_of_cells) > 0:
             break
     if debug:
         print("Chessboard (extra column process):")
-        cf.print_chessboard(chessboard[::-1]) # Invert the rows (for FEN notation)
+        cf.print_chessboard(chessboard[::-1])  # Invert the rows (for FEN notation)
 
 # Invert the rows (for FEN notation)
 chessboard = chessboard[::-1]
