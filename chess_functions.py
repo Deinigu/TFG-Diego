@@ -237,7 +237,6 @@ def calculate_cells(points, debug=False, img_cells=None):
     # print(row_sizes)
     for i in range(0, len(coordinates) - row_sizes[len(row_sizes) - 1], 1):
         row_size = row_sizes[size_index]
-        print("i: ", i, "Row index: ", size_index, "Iterator: ", iterator, "Row size: ", row_size, "Len coordinates: ", len(coordinates), "End: ", len(coordinates) - row_sizes[len(row_sizes) - 1])
         if ((iterator + 1) % row_size > 0 or iterator == 0) and i + row_size + 1 < len(coordinates):
             cell = np.array(
                 [
