@@ -213,7 +213,7 @@ for weight in weights:
     # Save the plot
     plt.savefig(weight_eval_dir + "f1_score_vs_brightness.png")
     print("\nSaved f1_score_vs_brightness.png successfully to " + weight_eval_dir + "f1_score_vs_brightness.png")
-        
+    
     
     ## CALCULATE THE PERCENTAGE OF DETECTED PIECES VS BRIGHTNESS ##
     # Calculate the mean precision for each brightness value
@@ -237,7 +237,6 @@ for weight in weights:
 
 ### PREDICT ON TEST IMAGES WITH DIFFERENT BRIGHTNESS CONFIGURATION ###
 # i=1 is the original brightness
-# i=3 is less brightness
 # i=9 is the least brightness
 
 # Get all test images
