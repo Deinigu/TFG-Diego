@@ -27,9 +27,18 @@ debug = True
 workspace_path = "workspace/"
 images_path = workspace_path + "images/"
 results_path = workspace_path + "results/"
+model_folder = "workspace/model/"
 
 # Model path
-model_path = "runs/train/weights/best.pt"
+model_path = glob.glob(model_folder + "*.pt")[0] if len(glob.glob(model_folder + "*.pt")) > 0 else None
+
+# Check if the model was found
+if model_path is None:
+    print("The model could not be loaded. Check that there is a model in the folder: " + model_folder + ".")
+    # Finish the program
+    exit()
+else:
+    print("Model loaded: " + model_path)
 
 # Load the image
 supported_image_formats = [".png", ".jpg", ".jpeg"]
@@ -46,7 +55,7 @@ for format in supported_image_formats:
 # Check if the image was loaded
 if img is None:
     print(
-        "No se pudo cargar la imagen. Compruebe el nombre de la imagen o que el formato sea correcto: "
+        "The image could not be loaded. Check the image name or that the format is correct: "
         + str(supported_image_formats)
         + "."
     )
