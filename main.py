@@ -30,7 +30,7 @@ model_folder = "workspace/model/"
 
 # Model path
 if args.model is not None:
-    model_path = workspace_path + "model/" + args.model + ".pt"
+    model_path = model_folder + args.model + ".pt"
     
     if not os.path.exists(model_path):
         print("The model could not be loaded. Check that the model exists in the folder: " + model_folder + ".")
@@ -70,7 +70,7 @@ if os.path.isfile(images_path):
         )
         # Finish the program
         exit()
-    img = cv2.imread(images_path)
+    img = cf.initialize_image(images_path)
 else:
     print("The image could not be loaded. Check the image path. ")
     # Finish the program
