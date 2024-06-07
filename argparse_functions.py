@@ -51,6 +51,7 @@ def argparse_main():
 
     return args
 
+
 # Argument parser function for the evaluation program
 def argparse_eval():
     # Argument parser
@@ -74,7 +75,7 @@ def argparse_eval():
             """
         ),
     )
-    
+
     # Execute all the tests
     parser.add_argument(
         "-a",
@@ -83,7 +84,7 @@ def argparse_eval():
         default=False,
         help="[DEFAULT] Run all the tests.",
     )
-    
+
     # Execute brightness validation test
     parser.add_argument(
         "-v",
@@ -92,7 +93,7 @@ def argparse_eval():
         default=False,
         help="Run the brightness validation.",
     )
-    
+
     # Execute brightness prediction test
     parser.add_argument(
         "-p",
@@ -101,7 +102,7 @@ def argparse_eval():
         default=False,
         help="Run the brightness prediction.",
     )
-    
+
     # Execute mean of results test
     parser.add_argument(
         "-m",
@@ -110,7 +111,7 @@ def argparse_eval():
         default=False,
         help="Run the mean of results test.",
     )
-    
+
     # Execute standard deviation of results test
     parser.add_argument(
         "-s",
@@ -118,6 +119,112 @@ def argparse_eval():
         action="store_true",
         default=False,
         help="Run the standard deviation of results test.",
+    )
+
+    # Parse the arguments
+    args = parser.parse_args()
+
+    return args
+
+# Argument parser function for the training program
+def argparse_train():
+    # Argument parser
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    # Define the arguments
+    # Path of the directory with the dataset.yml
+    parser.add_argument(
+        "-d",
+        "--dataset",
+        metavar="path_to_file",
+        required=True,
+        default=None,
+        help=dedent(
+            """\
+            [REQUIRED] Path to the YAML file of the dataset.
+            """
+        ),
+    )
+
+    # Path of the model to train
+    parser.add_argument(
+        "-m",
+        "--model",
+        metavar="path_to_model",
+        required=False,
+        default=None,
+        help=dedent(
+            """\
+            Path to the model to train.
+            """
+        ),
+    )
+
+    # Epochs
+    parser.add_argument(
+        "-e",
+        "--epochs",
+        metavar="number_of_epochs",
+        required=False,
+        default=30,
+        help=dedent(
+            """\
+            Number of epochs to train the model.
+            """
+        ),
+    )
+
+    # Batch size
+    parser.add_argument(
+        "-b",
+        "--batch",
+        metavar="batch_size",
+        required=False,
+        default=-1,
+        help=dedent(
+            """\
+            Batch size for the training.
+            """
+        ),
+    )
+
+    # Initial learning rate
+    parser.add_argument(
+        "-l0",
+        "--learning0",
+        metavar="initial_learning_rate",
+        required=False,
+        default=0.01,
+        help=dedent(
+            """\
+            Initial learning rate for the training.
+            """
+        ),
+    )
+
+    # Final learning rate
+    parser.add_argument(
+        "-lf",
+        "--learningf",
+        metavar="final_learning_rate",
+        required=False,
+        default=0.01,
+        help=dedent(
+            """\
+            Final learning rate for the training.
+            """
+        ),
+    )
+
+    # Save plots
+    parser.add_argument(
+        "-p",
+        "--plots",
+        action="store_true",
+        default=False,
+        help="Saves plots of the training.",
     )
 
     # Parse the arguments

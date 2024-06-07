@@ -20,6 +20,10 @@ workspace/eval/
 runs/*
 runs/
 
+# Ignore folds folder
+folds/*
+folds/
+
 # Ignore data/brightness_variations folder
 data/brightness_variations/*
 data/brightness_variations/
