@@ -166,7 +166,7 @@ def argparse_train():
         default=None,
         help=dedent(
             """\
-            Path to the model to train.
+            Path to the model to train. If you don't have a model, it will create a new one.
             """
         ),
     )
@@ -236,6 +236,126 @@ def argparse_train():
         help="Saves plots of the training.",
     )
 
+    # Parse the arguments
+    args = parser.parse_args()
+
+    return args
+
+def argparse_crossvalidation():
+    # Argument parser
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    # Define the arguments
+    # Path of the directory with the dataset.yml
+    parser.add_argument(
+        "-d",
+        "--dataset",
+        metavar="path_to_file",
+        required=True,
+        default=None,
+        help=dedent(
+            """\
+            [REQUIRED] Path to the YAML file of the dataset.
+            """
+        ),
+    )
+    
+    # Uses k-folds
+    parser.add_argument(
+        "-k",
+        "--folds",
+        metavar="number_of_folds",
+        required=True,
+        default=0,
+        help=dedent(
+            """\
+            [IMPORTANT: If you don't have the dataset splitted in folds, you need to run the program
+            with this flag. Otherwise, it won't work.] Number of k-folds to create.
+            """
+        ),
+    )
+    
+    # Path of the model to train
+    parser.add_argument(
+        "-m",
+        "--model",
+        metavar="path_to_model",
+        required=False,
+        default=None,
+        help=dedent(
+            """\
+            Path to the model to train. If you don't have a model, it will create a new one.
+            """
+        ),
+    )
+
+    # Epochs
+    parser.add_argument(
+        "-e",
+        "--epochs",
+        metavar="number_of_epochs",
+        required=False,
+        default=30,
+        help=dedent(
+            """\
+            Number of epochs to train the model.
+            """
+        ),
+    )
+
+    # Batch size
+    parser.add_argument(
+        "-b",
+        "--batch",
+        metavar="batch_size",
+        required=False,
+        default=-1,
+        help=dedent(
+            """\
+            Batch size for the training.
+            """
+        ),
+    )
+
+    # Initial learning rate
+    parser.add_argument(
+        "-l0",
+        "--learning0",
+        metavar="initial_learning_rate",
+        required=False,
+        default=0.01,
+        help=dedent(
+            """\
+            Initial learning rate for the training.
+            """
+        ),
+    )
+
+    # Final learning rate
+    parser.add_argument(
+        "-lf",
+        "--learningf",
+        metavar="final_learning_rate",
+        required=False,
+        default=0.01,
+        help=dedent(
+            """\
+            Final learning rate for the training.
+            """
+        ),
+    )
+
+    # Save plots
+    parser.add_argument(
+        "-p",
+        "--plots",
+        action="store_true",
+        default=False,
+        help="Saves plots of the training.",
+    )
+    
     # Parse the arguments
     args = parser.parse_args()
 
