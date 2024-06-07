@@ -45,6 +45,15 @@ def argparse_main():
         default=False,
         help="Show debug images and information.",
     )
+    
+    # Unicode output
+    parser.add_argument(
+        "-utf8",
+        "--utf8",
+        action="store_true",
+        default=False,
+        help="Output the results in utf-8 instead of unicode.",
+    )
 
     # Parse the arguments
     args = parser.parse_args()

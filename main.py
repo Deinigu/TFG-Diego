@@ -22,6 +22,9 @@ args = af.argparse_main()
 # Debug
 debug = args.debug
 
+# Unicode output
+unicode_output = not args.utf8
+
 # Workspaces paths
 workspace_path = "workspace/"
 images_path = args.image
@@ -31,9 +34,13 @@ model_folder = "workspace/model/"
 # Model path
 if args.model is not None:
     model_path = model_folder + args.model + ".pt"
-    
+
     if not os.path.exists(model_path):
-        print("The model could not be loaded. Check that the model exists in the folder: " + model_folder + ".")
+        print(
+            "The model could not be loaded. Check that the model exists in the folder: "
+            + model_folder
+            + "."
+        )
         # Finish the program
         exit()
 else:
@@ -235,7 +242,9 @@ for cell in cells:
 
 if debug:
     print("Chessboard (no extra column process):")
-    cf.print_chessboard(chessboard[::-1])  # Invert the rows (for FEN notation)
+    cf.print_chessboard(
+        chessboard[::-1], unicode=unicode_output
+    )  # Invert the rows (for FEN notation)
 
 # Check if there are any pieces left
 extra_column_needed = False
@@ -273,7 +282,9 @@ while extra_column_needed and len(rest_of_cells) > 0:
             break
     if debug:
         print("Chessboard (extra column process):")
-        cf.print_chessboard(chessboard[::-1])  # Invert the rows (for FEN notation)
+        cf.print_chessboard(
+            chessboard[::-1], unicode=unicode_output
+        )  # Invert the rows (for FEN notation)
 
 # Invert the rows (for FEN notation)
 chessboard = chessboard[::-1]
@@ -281,11 +292,11 @@ chessboard = chessboard[::-1]
 # Print the chessboard rotated to the right (as you see it in the image)
 chessboard_rotated = list(map(list, zip(*chessboard[::-1])))
 print("Chessboard from the perspective of the image:")
-cf.print_chessboard(chessboard_rotated)
+cf.print_chessboard(chessboard_rotated, unicode=unicode_output)
 
 # Print the chessboard
 print("Final Result:")
-cf.print_chessboard(chessboard)
+cf.print_chessboard(chessboard, unicode=unicode_output)
 
 
 # Draw the pieces on the image
