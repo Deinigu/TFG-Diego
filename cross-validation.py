@@ -58,7 +58,7 @@ for label in labels:
 labels_df = labels_df.fillna(0.0)  # replace `nan` values with `0.0`
 
 # Divide the dataset into k splits
-ksplit = 5
+ksplit = k_folds
 kf = KFold(
     n_splits=ksplit, shuffle=True, random_state=20
 )  # setting random_state for repeatable results

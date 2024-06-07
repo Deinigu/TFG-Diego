@@ -271,8 +271,7 @@ def argparse_crossvalidation():
         default=0,
         help=dedent(
             """\
-            [IMPORTANT: If you don't have the dataset splitted in folds, you need to run the program
-            with this flag. Otherwise, it won't work.] Number of k-folds to create.
+            [REQUIRED] Number of k-folds to create and/or use.
             """
         ),
     )
