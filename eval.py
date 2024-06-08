@@ -228,6 +228,9 @@ if all_tests or validation_test:
         plt.savefig(weight_eval_dir + "f1_score_vs_brightness.png")
         print("\nSaved f1_score_vs_brightness.png successfully to " + weight_eval_dir + "f1_score_vs_brightness.png")
         
+        # Save f-score vs brightness to a CSV file
+        mean_f1_scores.to_csv(weight_eval_dir + "f1_score_vs_brightness.csv")
+        print("\nSaved f1_score_vs_brightness.csv successfully to " + weight_eval_dir + "f1_score_vs_brightness.csv")
         
         ## CALCULATE THE PERCENTAGE OF DETECTED PIECES VS BRIGHTNESS ##
         # Calculate the mean precision for each brightness value
@@ -245,6 +248,9 @@ if all_tests or validation_test:
         plt.savefig(weight_eval_dir + "precision_vs_brightness.png")
         print("\Saved precision_vs_brightness.png successfully to " + weight_eval_dir + "precision_vs_brightness.png")
         
+        # Save precision vs brightness to a CSV file
+        mean_precision.to_csv(weight_eval_dir + "precision_vs_brightness.csv")
+        print("\nSaved precision_vs_brightness.csv successfully to " + weight_eval_dir + "precision_vs_brightness.csv")
 
         # Increase the index
         i += 1
