@@ -31,6 +31,10 @@ images_path = args.image
 results_path = workspace_path + "results/"
 model_folder = "workspace/model/"
 
+# Create results folder if it doesn't exist
+if not os.path.exists(results_path):
+    os.makedirs(results_path)
+
 # Model path
 if args.model is not None:
     model_path = model_folder + args.model + ".pt"
