@@ -43,7 +43,7 @@ python -m venv nombre-del-entorno
 source nombre-del-entorno/bin/activate
  ```
 
-- Para activarlo en Windows:ç
+- Para activarlo en Windows:
 
 ```bash
 .\nombre-del-entorno\Scripts\activate
