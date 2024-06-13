@@ -174,6 +174,12 @@ cells = cf.calculate_cells(points, debug, img_cells)
 # Save the image with the cells
 cv2.imwrite(save_path_folder + name + "_cells.png", img_cells)
 
+# If there are not chess pieces detected, finish the program
+if not os.path.exists(save_path_folder + "predict/labels/" + name + ".txt"):
+    print("The model didn't detect any chess pieces. Check the image and the model.")
+    # Finish the program
+    exit()
+
 # Read lines of the labels file
 lines = []
 with open(save_path_folder + "predict/labels/" + name + ".txt") as f:
