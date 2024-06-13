@@ -9,7 +9,7 @@ El proyecto tiene como finalidad desarrollar un sistema compuesto de una red neu
 
 - **Detección de Piezas:** El sistema puede identificar diferentes piezas de ajedrez (peones, caballos, alfiles, torres, reinas y reyes) y su color (blanco o negro). 
 - **Clasificación de Piezas:** Clasificación precisa de las piezas detectadas en función de su tipo y color. 
-- **Reconocimiento del Tablero:** Detección y mapeo preciso de la cuadrícula del tablero de ajedrez. 
+- **Reconocimiento del Tablero:** Detección y mapeo de la cuadrícula del tablero de ajedrez. 
 - **Salida en Notación FEN:** Generación de una cadena en notación FEN que representa la disposición exacta de las piezas en el tablero, facilitando así su análisis y reproducción.
 ## Instalación
 ### Requisitos 
