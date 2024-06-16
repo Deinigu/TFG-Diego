@@ -1,16 +1,12 @@
 import chess_functions as cf
-from collections import defaultdict
 import glob
-import math
-import operator
 import os
 from statistics import mean
 import cv2
 import numpy as np
-from scipy import cluster, spatial
-from sympy import Point, Polygon
-import chess_pieces_FEN as FEN
 from datetime import datetime
+import argparse_functions as af
+
 
 # Chess piece class
 class ChessPiece:
@@ -20,36 +16,74 @@ class ChessPiece:
         self.piece_type = piece_type
 
 
+# Get the arguments
+args = af.argparse_main()
+
 # Debug
-debug = True
+debug = args.debug
+
+# Unicode output
+unicode_output = not args.utf8
 
 # Workspaces paths
 workspace_path = "workspace/"
-images_path = workspace_path + "images/"
+images_path = args.image
 results_path = workspace_path + "results/"
+model_folder = "workspace/model/"
+
+# Create results folder if it doesn't exist
+if not os.path.exists(results_path):
+    os.makedirs(results_path)
 
 # Model path
-model_path = "runs/train/weights/best.pt"
+if args.model is not None:
+    model_path = model_folder + args.model + ".pt"
+
+    if not os.path.exists(model_path):
+        print(
+            "The model could not be loaded. Check that the model exists in the folder: "
+            + model_folder
+            + "."
+        )
+        # Finish the program
+        exit()
+else:
+    model_path = (
+        glob.glob(model_folder + "*.pt")[0]
+        if len(glob.glob(model_folder + "*.pt")) > 0
+        else None
+    )
+
+# Check if the model was found
+if model_path is None:
+    print(
+        "The model could not be loaded. Check that there is a model in the folder: "
+        + model_folder
+        + "."
+    )
+    # Finish the program
+    exit()
+else:
+    print("Model loaded: " + model_path)
 
 # Load the image
 supported_image_formats = [".png", ".jpg", ".jpeg"]
-name = "test"
 img = None
-for format in supported_image_formats:
-    try:
-        img = cf.initialize_image(images_path + name + format)
-        if img is not None:
-            break
-    except:
-        continue
 
-# Check if the image was loaded
-if img is None:
-    print(
-        "No se pudo cargar la imagen. Compruebe el nombre de la imagen o que el formato sea correcto: "
-        + str(supported_image_formats)
-        + "."
-    )
+# Check if the image exists and it's in one of the supported formats
+if os.path.isfile(images_path):
+    name, format = os.path.splitext(os.path.basename(images_path))
+    if format not in supported_image_formats:
+        print(
+            "The image format is not supported. Check that the format is correct: "
+            + str(supported_image_formats)
+            + "."
+        )
+        # Finish the program
+        exit()
+    img = cf.initialize_image(images_path)
+else:
+    print("The image could not be loaded. Check the image path. ")
     # Finish the program
     exit()
 
@@ -61,9 +95,7 @@ if not os.path.exists(save_path_folder):
     os.makedirs(save_path_folder)
 
 # Predict the chess pieces in the image
-results = cf.predict_chess_pieces(
-    images_path + name + format, model_path, save_path_folder
-)
+results = cf.predict_chess_pieces(images_path, model_path, save_path_folder)
 
 # Transform the image to grayscale
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -132,7 +164,7 @@ if debug:
 cv2.imwrite(save_path_folder + name + "_edges.png", img)
 
 # Clean the image
-img = cf.initialize_image(images_path + name + format)
+img = cf.initialize_image(images_path)
 
 # Calculate the cells
 img_cells = cf.create_img(img)
@@ -141,6 +173,12 @@ cells = cf.calculate_cells(points, debug, img_cells)
 
 # Save the image with the cells
 cv2.imwrite(save_path_folder + name + "_cells.png", img_cells)
+
+# If there are not chess pieces detected, finish the program
+if not os.path.exists(save_path_folder + "predict/labels/" + name + ".txt"):
+    print("The model didn't detect any chess pieces. Check the image and the model.")
+    # Finish the program
+    exit()
 
 # Read lines of the labels file
 lines = []
@@ -153,11 +191,11 @@ chess_pieces = []
 dh, dw, _ = img.shape
 for line in lines:
     # Split the numbers in the line
-    chesss_piece_number, x, y, w, h = map(float, line.split(" "))
-    chesss_piece_number = int(chesss_piece_number)
+    chess_piece_number, x, y, w, h = map(float, line.split(" "))
+    chess_piece_number = int(chess_piece_number)
 
     # Get the name of the chess piece in FEN notation
-    chess_piece = cf.get_piece_name(chesss_piece_number)
+    chess_piece = cf.get_piece_name(chess_piece_number)
     # print(chess_piece)
 
     l = float((x - w / 2) * dw)
@@ -214,7 +252,9 @@ for cell in cells:
 
 if debug:
     print("Chessboard (no extra column process):")
-    cf.print_chessboard(chessboard[::-1])  # Invert the rows (for FEN notation)
+    cf.print_chessboard(
+        chessboard[::-1], unicode=unicode_output
+    )  # Invert the rows (for FEN notation)
 
 # Check if there are any pieces left
 extra_column_needed = False
@@ -252,7 +292,9 @@ while extra_column_needed and len(rest_of_cells) > 0:
             break
     if debug:
         print("Chessboard (extra column process):")
-        cf.print_chessboard(chessboard[::-1])  # Invert the rows (for FEN notation)
+        cf.print_chessboard(
+            chessboard[::-1], unicode=unicode_output
+        )  # Invert the rows (for FEN notation)
 
 # Invert the rows (for FEN notation)
 chessboard = chessboard[::-1]
@@ -260,11 +302,11 @@ chessboard = chessboard[::-1]
 # Print the chessboard rotated to the right (as you see it in the image)
 chessboard_rotated = list(map(list, zip(*chessboard[::-1])))
 print("Chessboard from the perspective of the image:")
-cf.print_chessboard(chessboard_rotated)
+cf.print_chessboard(chessboard_rotated, unicode=unicode_output)
 
 # Print the chessboard
 print("Final Result:")
-cf.print_chessboard(chessboard)
+cf.print_chessboard(chessboard, unicode=unicode_output)
 
 
 # Draw the pieces on the image

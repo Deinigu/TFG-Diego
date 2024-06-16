@@ -20,6 +20,10 @@ workspace/eval/
 runs/*
 runs/
 
+# Ignore folds folder
+folds/*
+folds/
+
 # Ignore data/brightness_variations folder
 data/brightness_variations/*
 data/brightness_variations/
@@ -28,8 +32,11 @@ data/brightness_variations/
 MyEnv/*
 MyEnv/
 
-# Ignore data/test/labels.cache
+# Ignore labels.cache
+data/train/labels.cache
+data/val/labels.cache
 data/test/labels.cache
+
 
 # Ignore workspace/results folder
 workspace/results/*
