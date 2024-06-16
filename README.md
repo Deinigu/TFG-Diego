@@ -1,7 +1,7 @@
 # Detección y clasificación de piezas en un tablero real de ajedrez
 ## Introducción
 
-Este proyecto fue creado para la realización del Trabajo de Fin de Grado del Grado en Ingeniería del Software en la Universidad de Málaga, bajo la tutorización de Miguel Ángel Molina Cabello y Karl Thurnhofer Hemsi.
+Este proyecto fue creado por Diego López Reduello para la realización del Trabajo de Fin de Grado del Grado en Ingeniería del Software en la Universidad de Málaga, bajo la tutorización de Miguel Ángel Molina Cabello y Karl Thurnhofer Hemsi.
 ## Descripción
 
 El proyecto tiene como finalidad desarrollar un sistema compuesto de una red neuronal capaz de detectar y clasificar las diferentes piezas de ajedrez dispuestas sobre un tablero, así como sus posiciones en el propio tablero. Utilizando técnicas de procesamiento digital de imágenes, el sistema identifica la posición de cada pieza y proporciona esa información en notación FEN (Forsyth-Edwards Notation), lo que permite reproducir fácilmente la disposición del tablero.
