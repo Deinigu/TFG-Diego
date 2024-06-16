@@ -32,8 +32,11 @@ data/brightness_variations/
 MyEnv/*
 MyEnv/
 
-# Ignore data/test/labels.cache
+# Ignore labels.cache
+data/train/labels.cache
+data/val/labels.cache
 data/test/labels.cache
+
 
 # Ignore workspace/results folder
 workspace/results/*
