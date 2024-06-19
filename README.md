@@ -51,7 +51,7 @@ source environment-name/bin/activate
 ```
 #### Install dependencies 📦
 
-Install the necessary dependencies for the application using ``pip`:
+Install the necessary dependencies for the application using `pip`:
 
 ```bash
 pip install -r requirements.txt

@@ -262,15 +262,15 @@ def calculate_cells(points, debug=False, img_cells=None):
             iterator = 0
     return cells
 
-
+# Calculate the mean point of two points
 def mean_point(point1, point2):
     return (point1[0] + point2[0]) / 2, (point1[1] + point2[1]) / 2
 
-
+# Calculate the euclidean distance between two points
 def euclidean_distance(point1, point2):
     return math.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
 
-
+# Check if a piece is in a cell
 def is_piece_in_cell(piece_coords, cell_coords):
     l, t, r, b = piece_coords  # Piece coordinates
     cell_tl, cell_tr, cell_bl, cell_br = cell_coords  # Cell coordinates

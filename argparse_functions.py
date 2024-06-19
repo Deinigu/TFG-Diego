@@ -242,7 +242,7 @@ def argparse_train():
 
     return args
 
-
+# Argument parser function for the cross-validation program
 def argparse_crossvalidation():
     # Argument parser
     parser = argparse.ArgumentParser(

@@ -14,6 +14,7 @@ import argparse_functions as af
 # Get the arguments
 args = af.argparse_crossvalidation()
 
+# Assign the arguments to variables
 dataset = args.dataset
 model_path = args.model
 k_folds = int(args.folds)
@@ -101,6 +102,7 @@ save_path = Path(
 save_path.mkdir(parents=True, exist_ok=True)
 ds_yamls = []
 
+# Create directories and dataset YAML files for each split
 for split in folds_df.columns:
     # Create directories
     split_dir = save_path / split
