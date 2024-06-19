@@ -76,4 +76,4 @@ Under the tutoring of:
 * Karl Khader Thurnhofer Hemsi
 
 ## License 📄
-This project is under the MIT License - See the file [LICENSE.md](LICENSE.md) for more details.
+This project is under the MIT License - See the file [LICENSE](LICENSE) for more details.
