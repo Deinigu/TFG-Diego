@@ -13,6 +13,7 @@ ultralytics.checks()
 # Get arguments
 args = af.argparse_train()
 
+# Assign the arguments to variables
 dataset_path = args.dataset
 model_path = args.model
 epochs = int(args.epochs)
