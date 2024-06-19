@@ -9,8 +9,8 @@ This project aims to develop a system composed of a neural network capable of de
 ## Key Features ✨
 
 - **Piece Detection:** The system can identify different chess pieces (pawns, knights, bishops, rooks, queens and kings) and their color (white or black). 
-- Piece Classification:** Accurate classification of the detected pieces according to their type and color. 
-- Board Recognition:** Detection and mapping of the chessboard grid. 
+- **Piece Classification:** Accurate classification of the detected pieces according to their type and color. 
+- **Board Recognition:** Detection and mapping of the chessboard grid. 
 - **Output in FEN Notation:** Generation of a string in FEN notation that represents the exact arrangement of the pieces on the board, thus facilitating their analysis and reproduction.
 ## Starting 🚀
 ### Requirements 📋
