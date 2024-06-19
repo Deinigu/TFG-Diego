@@ -92,7 +92,9 @@ if all_tests or validation_test or prediction_test:
         )
 
         # Create folders
-        os.makedirs(brightness_datasets_dir + "brightness_" + str(i) + "/", exist_ok=True)
+        os.makedirs(
+            brightness_datasets_dir + "brightness_" + str(i) + "/", exist_ok=True
+        )
         os.makedirs(brightness_images_dir, exist_ok=True)
         os.makedirs(brightness_labels_dir, exist_ok=True)
 
@@ -130,7 +132,12 @@ if all_tests or validation_test or prediction_test:
         ) as file:
             data = file.readlines()
         data[0] = (
-            "path: " + root_path + brightness_datasets_dir + "brightness_" + str(i) + "\n"
+            "path: "
+            + root_path
+            + brightness_datasets_dir
+            + "brightness_"
+            + str(i)
+            + "\n"
         )
 
         # Write the new data to the file
@@ -143,9 +150,17 @@ if all_tests or validation_test or prediction_test:
         brigtness_datasets_list.append(
             brightness_datasets_dir + "brightness_" + str(i) + "/test.yml"
         )
-        
+
         # Print the success message
-        print("\nDataset with brightness " + str(i) + " created in " + brightness_datasets_dir + "brightness_" + str(i) + "/\n")
+        print(
+            "\nDataset with brightness "
+            + str(i)
+            + " created in "
+            + brightness_datasets_dir
+            + "brightness_"
+            + str(i)
+            + "/\n"
+        )
 
 ### VALIDATION WITH DIFFERENT BRIGHTNESS CONFIGURATIONS ###
 if all_tests or validation_test:
@@ -158,7 +173,9 @@ if all_tests or validation_test:
         brigthness_index = 0
 
         # Directory to save the validation results
-        weight_eval_dir = eval_dir + "validation/" + os.path.basename(weight) + str(i) + "/"
+        weight_eval_dir = (
+            eval_dir + "validation/" + os.path.basename(weight) + str(i) + "/"
+        )
 
         # Load the model
         model = YOLO(model=weight, task="detect")
@@ -170,14 +187,20 @@ if all_tests or validation_test:
         for dataset in brigtness_datasets_list:
             # Directory to save the validation results with the brightness configuration
             weight_brightness_eval_dir = (
-                weight_eval_dir + "brightness_" + str(brightness_values[brigthness_index]) + "/"
+                weight_eval_dir
+                + "brightness_"
+                + str(brightness_values[brigthness_index])
+                + "/"
             )
 
             print("\nValidating weight: " + weight + " with dataset: " + dataset + "\n")
 
             # Validate the model with the dataset
             result = model.val(
-                data=dataset, save=True, save_json=True, project=weight_brightness_eval_dir
+                data=dataset,
+                save=True,
+                save_json=True,
+                project=weight_brightness_eval_dir,
             )
 
             # Convert the results_dict to a DataFrame
@@ -198,7 +221,7 @@ if all_tests or validation_test:
         # Save the result to a CSV file
         results_df.to_csv(weight_eval_dir + "result.csv")
         print("\nSaved result.csv successfully to " + weight_eval_dir + "result.csv")
-            
+
         # Load the result from the CSV file
         df = pd.read_csv(weight_eval_dir + "result.csv")
 
@@ -223,15 +246,23 @@ if all_tests or validation_test:
         plt.ylabel("F-Score")
         plt.title("F-Score as a function of Brightness")
         plt.grid(True)
-        
+
         # Save the plot
         plt.savefig(weight_eval_dir + "f1_score_vs_brightness.png")
-        print("\nSaved f1_score_vs_brightness.png successfully to " + weight_eval_dir + "f1_score_vs_brightness.png")
-        
+        print(
+            "\nSaved f1_score_vs_brightness.png successfully to "
+            + weight_eval_dir
+            + "f1_score_vs_brightness.png"
+        )
+
         # Save f-score vs brightness to a CSV file
         mean_f1_scores.to_csv(weight_eval_dir + "f1_score_vs_brightness.csv")
-        print("\nSaved f1_score_vs_brightness.csv successfully to " + weight_eval_dir + "f1_score_vs_brightness.csv")
-        
+        print(
+            "\nSaved f1_score_vs_brightness.csv successfully to "
+            + weight_eval_dir
+            + "f1_score_vs_brightness.csv"
+        )
+
         ## CALCULATE THE PERCENTAGE OF DETECTED PIECES VS BRIGHTNESS ##
         # Calculate the mean precision for each brightness value
         mean_precision = df.groupby("brightness")["metrics/mAP50(B)"].mean()
@@ -246,11 +277,19 @@ if all_tests or validation_test:
 
         # Save the plot
         plt.savefig(weight_eval_dir + "precision_vs_brightness.png")
-        print("\Saved precision_vs_brightness.png successfully to " + weight_eval_dir + "precision_vs_brightness.png")
-        
+        print(
+            "\Saved precision_vs_brightness.png successfully to "
+            + weight_eval_dir
+            + "precision_vs_brightness.png"
+        )
+
         # Save precision vs brightness to a CSV file
         mean_precision.to_csv(weight_eval_dir + "precision_vs_brightness.csv")
-        print("\nSaved precision_vs_brightness.csv successfully to " + weight_eval_dir + "precision_vs_brightness.csv")
+        print(
+            "\nSaved precision_vs_brightness.csv successfully to "
+            + weight_eval_dir
+            + "precision_vs_brightness.csv"
+        )
 
         # Increase the index
         i += 1
@@ -271,8 +310,14 @@ if all_tests or prediction_test:
         for weight in weights:
             # Load the model
             model = YOLO(model=weight, task="detect")
-            
-            print("\nPredicting with weight: " + weight + " with brightness: " + str(i) + "\n")
+
+            print(
+                "\nPredicting with weight: "
+                + weight
+                + " with brightness: "
+                + str(i)
+                + "\n"
+            )
 
             # Predict on test images
             results = model.predict(
@@ -287,9 +332,9 @@ if all_tests or prediction_test:
 
 ### MEAN AND STANDARD DEVIATION CALCULATIONS ###
 if all_tests or mean_test or std_test:
-    # Get all the files 'results.csv' in the directory
+    # Get all the files 'results.csv' in the directory and subdirectories
     file_paths = glob.glob(args.directory + "**/results.csv", recursive=True)
-    
+
     # Print the file paths
     if len(file_paths) == 0:
         print("No csv files found in " + args.directory + ". Exiting...")
@@ -298,7 +343,6 @@ if all_tests or mean_test or std_test:
         print("Files 'results.csv' found:")
         for file_path in file_paths:
             print(file_path)
-
 
     results = []
 
@@ -323,9 +367,13 @@ if all_tests or mean_test:
     print("Saved mean_results.csv successfully to" + eval_dir + "mean_results.csv")
 
 if all_tests or std_test:
-    std_df = results_df.groupby(results_df.columns[0]).std()
-
-# Save std_df to a CSV file
-if all_tests or std_test:
-    std_df.to_csv(eval_dir + "std_results.csv")
-    print("Saved std_results.csv successfully to" + eval_dir + "std_results.csv")
+    if (
+        len(results) > 1
+    ):  # If there is more than one results.csv file, calculate the standard deviation
+        std_df = results_df.groupby(results_df.columns[0]).std()
+        std_df.to_csv(eval_dir + "std_results.csv")
+        print("Saved std_results.csv successfully to" + eval_dir + "std_results.csv")
+    else:
+        print(
+            "The standard deviation could not be calculated because there is only one results.csv file."
+        )

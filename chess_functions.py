@@ -1,13 +1,9 @@
 from collections import defaultdict
-import glob
 import math
-import operator
-import os
 from statistics import mean
 import cv2
 import numpy as np
 from scipy import cluster, spatial
-from sympy import Polygon
 import chess_pieces_FEN as FEN
 from ultralytics import YOLO
 
@@ -213,7 +209,7 @@ def calculate_cells(points, debug=False, img_cells=None):
     coordinates = []
     for i in order:
         coordinates.append(points[i])
-        
+
     # Delete the rows with less or equal to the umbral of points
     points_umbral = 4
     for row in rows:
@@ -223,13 +219,13 @@ def calculate_cells(points, debug=False, img_cells=None):
             for point in row:
                 coordinates.remove(point)
             rows.remove(row)
-    
+
     # Knowing that the points are ordered from top to bottom, we can divide them into cells
     cells = []
-    
+
     # Save the size of each row
     row_sizes = [len(row) for row in rows]
-    
+
     # Choose the cells based on the row sizes
     size_index = 0
     row_size = row_sizes[size_index]
@@ -237,7 +233,9 @@ def calculate_cells(points, debug=False, img_cells=None):
     # print(row_sizes)
     for i in range(0, len(coordinates) - row_sizes[len(row_sizes) - 1], 1):
         row_size = row_sizes[size_index]
-        if ((iterator + 1) % row_size > 0 or iterator == 0) and i + row_size + 1 < len(coordinates):
+        if ((iterator + 1) % row_size > 0 or iterator == 0) and i + row_size + 1 < len(
+            coordinates
+        ):
             cell = np.array(
                 [
                     coordinates[i],

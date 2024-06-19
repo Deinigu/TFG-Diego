@@ -1,7 +1,6 @@
 import chess_functions as cf
 import glob
 import os
-from statistics import mean
 import cv2
 import numpy as np
 from datetime import datetime

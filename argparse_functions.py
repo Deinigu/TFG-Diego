@@ -45,7 +45,7 @@ def argparse_main():
         default=False,
         help="Show debug images and information.",
     )
-    
+
     # Unicode output
     parser.add_argument(
         "-utf8",
@@ -134,6 +134,7 @@ def argparse_eval():
     args = parser.parse_args()
 
     return args
+
 
 # Argument parser function for the training program
 def argparse_train():
@@ -241,6 +242,7 @@ def argparse_train():
 
     return args
 
+
 def argparse_crossvalidation():
     # Argument parser
     parser = argparse.ArgumentParser(
@@ -261,7 +263,7 @@ def argparse_crossvalidation():
             """
         ),
     )
-    
+
     # Uses k-folds
     parser.add_argument(
         "-k",
@@ -275,7 +277,7 @@ def argparse_crossvalidation():
             """
         ),
     )
-    
+
     # Path of the model to train
     parser.add_argument(
         "-m",
@@ -354,7 +356,7 @@ def argparse_crossvalidation():
         default=False,
         help="Saves plots of the training.",
     )
-    
+
     # Parse the arguments
     args = parser.parse_args()
 
