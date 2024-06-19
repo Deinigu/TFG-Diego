@@ -12,6 +12,36 @@
 # Built Visual Studio Code Extensions
 *.vsix
 
+# Ignore eval folder
+workspace/eval/*
+workspace/eval/
+
+# Ignore runs folder
+runs/*
+runs/
+
+# Ignore folds folder
+folds/*
+folds/
+
+# Ignore data/brightness_variations folder
+data/brightness_variations/*
+data/brightness_variations/
+
 # Ignore MyEnv folder
 MyEnv/*
 MyEnv/
+
+# Ignore labels.cache
+data/train/labels.cache
+data/val/labels.cache
+data/test/labels.cache
+
+
+# Ignore workspace/results folder
+workspace/results/*
+workspace/results/
+
+# Ignore python cache
+__pycache__/
+*.pyc

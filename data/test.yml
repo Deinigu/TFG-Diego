@@ -1,0 +1,18 @@
+path: ../TFG-Diego/data # dataset root dir
+train: train/images
+val: test/images
+
+# Classes
+names:
+  0: black-king
+  1: black-bishop
+  2: black-knight
+  3: black-rook
+  4: black-pawn
+  5: black-queen
+  6: white-king
+  7: white-bishop
+  8: white-knight
+  9: white-rook
+  10: white-pawn
+  11: white-queen

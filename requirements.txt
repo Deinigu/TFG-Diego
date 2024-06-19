@@ -1,0 +1,9 @@
+matplotlib==3.8.3
+numpy==1.26.4
+opencv_python==4.9.0.80
+pandas==2.2.2
+Pillow==10.3.0
+scipy==1.13.0
+sympy==1.12
+ultralytics==8.2.5
+scikit-learn==1.5.0
