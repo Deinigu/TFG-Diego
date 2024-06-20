@@ -74,6 +74,3 @@ This project was done by:
 Under the tutoring of: 
 * Miguel Angel Molina Cabello 
 * Karl Khader Thurnhofer Hemsi
-
-## License 📄
-This project is under the MIT License - See the file [LICENSE](LICENSE) for more details.
