@@ -74,6 +74,3 @@ Este proyecto fue realizado por:
 Bajo la tutorización de: 
 * Miguel Ángel Molina Cabello 
 * Karl Khader Thurnhofer Hemsi
-
-## Licencia 📄
-Este proyecto está bajo la Licencia MIT - Mira el archivo [LICENSE.md](LICENSE.md) para más detalles.
