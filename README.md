@@ -1,7 +1,25 @@
 # Detection and classification of pieces in a real chess board ♟️
-<p align="center"><img src="https://res.cloudinary.com/dx4oicqhy/image/upload/v1718800058/github_tfg_portada.png" width="65%" height="65%"/>
+<div align="center"><img src="https://res.cloudinary.com/dx4oicqhy/image/upload/v1718800058/github_tfg_portada.png" style="width:85%">
+ <p>
+  <a href="https://github.com/Deinigu/TFG-Diego/graphs/contributors">
+    <img src="https://img.shields.io/github/contributors/Deinigu/TFG-Diego" alt="contributors" />
+  </a>
+  <a href="">
+    <img src="https://img.shields.io/github/last-commit/Deinigu/TFG-Diego" alt="last update" />
+  </a>
+  <a href="https://github.com/Deinigu/TFG-Diego/network/members">
+    <img src="https://img.shields.io/github/forks/Deinigu/TFG-Diego" alt="forks" />
+  </a>
+  <a href="https://github.com/Deinigu/TFG-Diego/stargazers">
+    <img src="https://img.shields.io/github/stars/Deinigu/TFG-Diego" alt="stars" />
+  </a>
+  <a href="https://github.com/Deinigu/TFG-Diego/issues/">
+    <img src="https://img.shields.io/github/issues/Deinigu/TFG-Diego" alt="open issues" />
+  </a>
+</p>
+  <p>This project was created by Diego López Reduello under the tutoring of Miguel Ángel Molina Cabello and Karl Khader Thurnhofer Hemsi for the Final Degree Project of the Software Engineering Degree at the University of Málaga.</p>
 
-This project was created by Diego López Reduello under the tutoring of Miguel Ángel Molina Cabello and Karl Khader Thurnhofer Hemsi for the Final Degree Project of the Software Engineering Degree at the University of Málaga.
+</div>
 
 ## Description 📋
 This project aims to develop a system composed of a neural network capable of detecting and classifying the different chess pieces arranged on a chessboard, as well as their positions on the board itself. Using digital image processing techniques, the system identifies the position of each piece and provides this information in FEN (Forsyth-Edwards Notation), which allows to easily reproduce the layout of the board.
